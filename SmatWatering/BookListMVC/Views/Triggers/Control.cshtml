@@ -1,0 +1,110 @@
+﻿@model SmartWatering.Models.Control
+
+@{
+    ViewData["Title"] = "Control";
+}
+
+    <h1 class="text-info">Control</h1>
+
+<hr />
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4  ">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Set range value</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row ">
+                        <form asp-action="Control" class="col-12 justify-content-center">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                            <div class="form-group row justify-content-center">
+                                <label asp-for="Device" class="control-label col-4"></label>
+                                <select asp-for="Device" id="Device" onchange="updatePin()" class="form-control col-5">
+                                </select>
+                                <span asp-validation-for="Device" class="text-danger"></span>
+                            </div>
+                            <div class="form-group row justify-content-center">
+                                <label asp-for="PIN" class="control-label col-4"></label>
+                                <select asp-for="PIN" id="Pin" class="form-control col-5"></select>
+                                <span asp-validation-for="PIN" class="text-danger"></span>
+                            </div>
+                            <div class="form-group row justify-content-center">
+                                <label asp-for="Status" class="control-label col-4 border border-0"></label>
+                                <select asp-for="Status" class="form-control col-5">
+                                    <option selected value="0">OFF</option>
+                                    <option value="1">ON</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                            <div class="form-group row justify-content-center">
+                                <input type="submit" onclick="Noti('Schedule task', 'success')" value="Submit" class="btn btn-primary btn-icon-split btn-lg  col-3 " />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/js/control.js"></script>
+<script src="~/js/toatr.js"></script>
+
+
+@*<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="VariableId" class="control-label"></label>
+                <input asp-for="VariableId" class="form-control" />
+                <span asp-validation-for="VariableId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="min" class="control-label"></label>
+                <input asp-for="min" class="form-control" />
+                <span asp-validation-for="min" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="max" class="control-label"></label>
+                <input asp-for="max" class="form-control" />
+                <span asp-validation-for="max" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Interval" class="control-label"></label>
+                <input asp-for="Interval" class="form-control" />
+                <span asp-validation-for="Interval" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Duration" class="control-label"></label>
+                <input asp-for="Duration" class="form-control" />
+                <span asp-validation-for="Duration" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreatedDate" class="control-label"></label>
+                <input asp-for="CreatedDate" class="form-control" />
+                <span asp-validation-for="CreatedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UpdatedDate" class="control-label"></label>
+                <input asp-for="UpdatedDate" class="form-control" />
+                <span asp-validation-for="UpdatedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>*@
+

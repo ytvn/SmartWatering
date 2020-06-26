@@ -1,0 +1,109 @@
+﻿@model IEnumerable<SmartWatering.Models.ViewModels.VariableValueView>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1 class="text-info">Variable Values</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<div class="col-12 border p-3">
+
+    <table id="DT_load" class="table table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <th>Variable Name</th>
+                <th>Value</th>
+                <th>PIN</th>
+                <th>Chip ID</th>
+                <th>Created Date</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+@section Scripts{
+    <script src="~/js/table/variableValueTable.js"></script>
+    <script src="~/js/toatr.js"></script>
+    <script>
+        function ok() {
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, you will not be able to recover",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true
+            }).then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: url,
+                        success: function (data) {
+                            if (data.success) {
+                                toastr.success(data.message);
+                                dataTable.ajax.reload();
+                            }
+                            else {
+                                toastr.error(data.message);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}
+
+
+
+@*<table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.VariableName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Value)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PIN)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ChipId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CreatedDate)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VariableName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Value)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PIN)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChipId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.VariableValueId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.VariableValueId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.VariableValueId">Delete</a>
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>*@
