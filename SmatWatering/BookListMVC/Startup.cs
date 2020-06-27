@@ -8,6 +8,7 @@ using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,15 +32,9 @@ namespace BookListMVC
                 options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
                 );
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
-            //services.AddHangfire(config =>
-            //    config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-            //            .UseSimpleAssemblyNameTypeSerializer()
-            //            .UseDefaultTypeSerializer()
-            //            .UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"))
-            //.UseMemoryStorage()
-            //); ; ;
-            //services.AddHangfireServer();
+            
 
         }
 
@@ -60,7 +55,7 @@ namespace BookListMVC
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -71,13 +66,7 @@ namespace BookListMVC
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-            //app.UseHangfireDashboard();
-            //backgroundJobClient.Enqueue(() => Console.WriteLine("ydapchai"));
-            //recurringJobManager.AddOrUpdate(
-            //    "Run every minute",
-            //    () => Console.WriteLine("Test recuring job"),
-            //    "* * * * * *" 
-            //    );
+          
         }
     }
 }

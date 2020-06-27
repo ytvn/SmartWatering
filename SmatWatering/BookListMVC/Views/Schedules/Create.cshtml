@@ -1,4 +1,4 @@
-﻿@model SmartWatering.Models.Schedule
+﻿@model Schedule
 
 @{
     ViewData["Title"] = "Create";
@@ -65,5 +65,7 @@
         </div>
     </div>
 </div>
-<script src="~/js/schedule.js"></script>
-<script src="~/js/toatr.js"></script>
+@section scripts{
+    <script src="~/js/schedule.js"></script>
+    <script src="~/js/toatr.js"></script>
+}
