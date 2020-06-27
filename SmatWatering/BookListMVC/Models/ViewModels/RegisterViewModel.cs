@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace SmartWatering.Models.ViewModels
     {
         [Required]
         [EmailAddress]
+        [Remote(action: "IsEmailInUse", controller: "Account")]
         public string Email { get; set; }
 
         [Required]
@@ -17,6 +19,8 @@ namespace SmartWatering.Models.ViewModels
 
         [Required]
         public string LastName { get; set; }
+        [Required]
+        public string UserName { get; set; }
 
         [Required]
         [DataType(DataType.Password)]

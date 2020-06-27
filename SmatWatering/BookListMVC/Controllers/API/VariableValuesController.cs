@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BookListMVC.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SmartWatering.Controllers.API
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class VariableValuesController : ControllerBase

@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BookListMVC.Models;
 using SmartWatering.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SmartWatering.Controllers
 {
+    [Authorize]
     public class DevicesController : Controller
     {
         private readonly ApplicationDbContext _context;
