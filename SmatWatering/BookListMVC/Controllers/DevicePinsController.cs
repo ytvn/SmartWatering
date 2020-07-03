@@ -53,6 +53,7 @@ namespace SmartWatering.Controllers
         // GET: DevicePins/Create
         public IActionResult Create()
         {
+
             return View();
         }
 
