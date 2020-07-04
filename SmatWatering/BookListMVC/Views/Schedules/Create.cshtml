@@ -1,0 +1,71 @@
+﻿@model Schedule
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Schedule</h1>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow mb-4  ">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Schedule time to pump water</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row ">
+                        <form asp-action="Create" class="col-12 justify-content-center">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group row justify-content-center">
+                                <label asp-for="intervalType" class="control-label col-4 border border-0"></label>
+                                <select asp-for="intervalType" class="form-control col-5" onchange="myFunction()">
+                                    @{
+                                        foreach (var e in (SmartWatering.Util.IntervalType[])Enum.GetValues(typeof(SmartWatering.Util.IntervalType)))
+                                        {
+                                            <option value="@e">@SmartWatering.Util.Formater.Readable(e.ToString())</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="intervalType" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group row justify-content-center">
+                                <label asp-for="TimeStart" class="control-label col-4"></label>
+                                <input asp-for="TimeStart" value="@DateTime.Now.AddMinutes(1).ToShortTimeString()" type="time" class="form-control col-5" />
+                                <span asp-validation-for="TimeStart" class="text-danger"></span>
+                            </div>
+                            <div class="form-group row justify-content-center">
+                                <label asp-for="Interval" id="Interval" class="control-label col-4"></label>
+                                <input asp-for="Interval" value="10" class="form-control col-5" />
+                                <span asp-validation-for="Interval" class="text-danger"></span>
+                            </div>
+
+
+                            <div class="form-group row justify-content-center">
+                                <label asp-for="Device" class="control-label col-4"></label>
+                                <select asp-for="Device" id="Device" onchange="updatePin()" class="form-control col-5">
+                                </select>
+                                <span asp-validation-for="Device" class="text-danger"></span>
+                            </div>
+                            <div class="form-group row justify-content-center">
+                                <label asp-for="PIN" class="control-label col-4"></label>
+                                <select asp-for="PIN" id="Pin" class="form-control col-5"></select>
+                                <span asp-validation-for="PIN" class="text-danger"></span>
+                            </div>
+                            <div class="form-group row justify-content-center">
+                                <input type="submit" onclick="Noti('Schedule task', 'success')" value="Schedule" class="btn btn-primary btn-icon-split btn-lg  col-3 " />
+                                <input onclick="Stop()" type="button" value="Stop" class="btn btn-danger btn-icon-split btn-lg offset-2 col-3 " />
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script src="~/js/schedule.js"></script>
+    <script src="~/js/toatr.js"></script>
+}

@@ -1,0 +1,70 @@
+﻿@model BookListMVC.Models.VariableValue
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>VariableValue</h4>
+<hr />
+@*<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Value" class="control-label"></label>
+                <input asp-for="Value" class="form-control" />
+                <span asp-validation-for="Value" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VariableId" class="control-label"></label>
+                <input asp-for="VariableId" class="form-control" />
+                <span asp-validation-for="VariableId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>*@
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4  ">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary"></h6>
+                </div>
+                <div class="card-body">
+                    <div class="row ">
+                        <form asp-action="Create" class="col-12 justify-content-center">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                            <div class="form-group row justify-content-center">
+                                <label asp-for="Value" class="control-label col-4"></label>
+                                <input asp-for="Value" id="Value" class="form-control col-5">
+                                </input>
+                                <span asp-validation-for="Value" class="text-danger"></span>
+                            </div>
+                            <div class="form-group row justify-content-center">
+                                <label asp-for="VariableId" class="control-label col-4"></label>
+                                <input asp-for="VariableId" id="VariableId" class="form-control col-5">
+                                </input>
+                                <span asp-validation-for="VariableId" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group row justify-content-center">
+                                <input type="submit" value="Create" class="btn btn-primary btn-icon-split btn-lg  col-3 " />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

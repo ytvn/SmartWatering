@@ -1,0 +1,39 @@
+﻿@model CreateRoleViewModel
+
+@{
+    ViewData["Title"] = "Create New Role";
+}
+
+<h1 class="text-info">Create New Role</h1>
+
+<hr />
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4  ">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Create new</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row ">
+                        <form method="post" class="col-12 justify-content-center">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                            <div class="form-group row justify-content-center">
+                                <label asp-for="RoleName" class="control-label col-4"></label>
+                                <input asp-for="RoleName" class="form-control col-5" />
+                                <span asp-validation-for="RoleName" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group row justify-content-center">
+                                <input type="submit"  value="Create Role" class="btn btn-primary btn-icon-split col-3" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
