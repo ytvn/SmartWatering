@@ -22,7 +22,12 @@ namespace SmartWatering.Controllers
             SignInManager = signInManager;
 
         }
-
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
 
         [HttpGet]
         public IActionResult Register()
@@ -45,6 +50,10 @@ namespace SmartWatering.Controllers
 
                 if (result.Succeeded)
                 {
+                    if(SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                    {
+                        return RedirectToAction("ListUsers", "Administration");
+                    }
                     await SignInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("index", "home");
                 }
