@@ -1,4 +1,5 @@
 ﻿@model BookListMVC.Models.DevicePin
+@using SmartWatering.Util;
 @{
     ViewData["Title"] = "Edit";
     var Chips = ViewBag.Chips;
@@ -20,16 +21,27 @@
                         <form asp-action="Edit" class="col-12 justify-content-center">
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                             <input type="hidden" asp-for="PinId" />
+
+                            <div class="form-group row justify-content-center">
+                                <label asp-for="PinType" class="control-label col-4"></label>
+                                <select asp-for="PinType" class="form-control col-5">
+                                    @{foreach (var e in (PinType[])Enum.GetValues(typeof(PinType)))
+                                        {
+                                            <option value="@e">@e</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="PinType" class="text-danger"></span>
+                            </div>
+
                             <div class="form-group row justify-content-center">
                                 <label asp-for="PIN" class="control-label col-4"></label>
                                 <input asp-for="PIN" id="PIN" class="form-control col-5">
-                                </input>
                                 <span asp-validation-for="PIN" class="text-danger"></span>
                             </div>
                             <div class="form-group row justify-content-center">
                                 <label asp-for="Description" class="control-label col-4"></label>
                                 <input asp-for="Description" id="Description" class="form-control col-5">
-                                </input>
                                 <span asp-validation-for="Description" class="text-danger"></span>
                             </div>
                             <div class="form-group row justify-content-center">

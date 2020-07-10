@@ -1,4 +1,5 @@
 ﻿using SmartWatering.Interface;
+using SmartWatering.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -22,5 +23,7 @@ namespace BookListMVC.Models
         public DateTime UpdatedDate { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
+        [Display(Name = "Type")]
+        public PinType PinType { get; set; }
     }
 }

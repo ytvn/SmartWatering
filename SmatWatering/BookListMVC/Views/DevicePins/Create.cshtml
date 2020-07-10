@@ -1,4 +1,5 @@
 ﻿@model BookListMVC.Models.DevicePin
+@using SmartWatering.Util;
 @{
     ViewData["Title"] = "Create";
     var Chips = ViewBag.Chips;
@@ -19,6 +20,17 @@
                     <div class="row ">
                         <form asp-action="Create" class="col-12 justify-content-center">
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group row justify-content-center">
+                                <label asp-for="PinType" class="control-label col-4"></label>
+                                <select asp-for="PinType" class="form-control col-5">
+                                    @{foreach (var e in (PinType[])Enum.GetValues(typeof(PinType)))
+                                        {
+                                            <option value="@e">@e</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="PinType" class="text-danger"></span>
+                            </div>
 
                             <div class="form-group row justify-content-center">
                                 <label asp-for="PIN" class="control-label col-4"></label>

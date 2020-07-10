@@ -74,7 +74,7 @@ namespace SmartWatering.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("PinId,PIN,chipId,Description")] DevicePin devicePin)
+        public IActionResult Create([Bind("PinType, PinId,PIN,chipId,Description")] DevicePin devicePin)
         {
             var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -122,7 +122,7 @@ namespace SmartWatering.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("PinId,PIN,chipId,Description,CreatedDate,UpdatedDate")] DevicePin devicePin)
+        public IActionResult Edit(int id, [Bind("PinId, PinType, PIN,chipId,Description,CreatedDate,UpdatedDate")] DevicePin devicePin)
         {
             var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 

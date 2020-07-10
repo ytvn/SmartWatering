@@ -2,65 +2,6 @@
 
 @{ ViewData["Title"] = "Index"; }
 
-@*<h1>Index</h1>
-
-    <p>
-        <a asp-action="Create">Create New</a>
-    </p>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.intervalType)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.TimeStart)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Interval)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Device)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.PIN)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Variable)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-    @foreach (var item in Model) {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.intervalType)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TimeStart)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Interval)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Device)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PIN)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Variable)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
-    }
-        </tbody>
-    </table>*@
 <!-- Begin Page Content -->
 <div class="container-fluid">
 
@@ -70,9 +11,7 @@
     <p class="mb-4">
         <a asp-action="Create">Create New</a>
     </p>
-    @*<h1 class="h3 mb-2 text-gray-800">Tables</h1>
-        <p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below. For more information about DataTables, please visit the <a target="_blank" href="https://datatables.net">official DataTables documentation</a>.</p>*@
-
+    
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
