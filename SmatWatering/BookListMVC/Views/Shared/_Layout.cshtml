@@ -101,6 +101,13 @@
                     <span>Settings</span>
                 </a>
             </li>
+            <!-- Nav Item - OverView -->
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Home" asp-action="OverView">
+                    <i class="fas fa-fw fa-wrench"></i>
+                    <span>OverView  </span>
+                </a>
+            </li>
             @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
             {
                      @*<div> @signInManager.UserManager.GetUserId User.Identity.Name;</div>*@
@@ -388,6 +395,8 @@
     @*<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>*@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     @*<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>*@
     @if (IsSectionDefined("Scripts"))
     {

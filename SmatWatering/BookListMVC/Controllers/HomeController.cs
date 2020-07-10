@@ -6,21 +6,34 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using BookListMVC.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookListMVC.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
         {
             _logger = logger;
+            _context = context;
         }
-
-        public IActionResult Index()
+       
+        public async Task<IActionResult> Index()
         {
-            return View();
+            
+            return View(await _context.Variable.ToListAsync());
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetVariables()
+        {
+            return Json( await _context.Variable.ToListAsync());
+        }
+        public async Task<IActionResult> OverView()
+        {
+            return View(await _context.Device.ToListAsync());
         }
 
         public IActionResult Privacy()

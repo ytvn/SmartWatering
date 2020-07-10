@@ -5,7 +5,7 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
 
-    <!-- Page Heading -->
+     Page Heading 
     <h1 class="h3 mb-2 text-gray-800 text-info">Devices</h1>
 
     <p class="mb-4">
@@ -66,6 +66,39 @@
     </div>
 
 </div>
+@*<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <h2 class="text-black">List of devices </h2>
+        </div>
+        <div class="col-6 text-right">
+            <a class="btn btn-primary text-white" asp-action="Create"><i class="fas fa-plus"></i> &nbsp; Create New Device </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        @foreach (var item in Model)
+        {
+                <div class="col-md-4 col-sm-6 col-xs-12">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading ellipsis">
+                            <a asp-controller="DevicePins" asp-action="Details" asp-route-id="@item.ChipId"> <i class="fa fa-chart-bar"></i>    </a>
+                            
+                            
+                            <a asp-controller="DevicePins" asp-action="Details" asp-route-id="@item.ChipId"> @Html.DisplayFor(modelItem => item.ChipId)</a>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-6 col-xs-6">Chip Id</div>
+                                <div class="col-sm-6 col-xs-6"><b>@item.ChipId</b></div>
+                            </div>
+                            <p class="public-channel-description">@item.Description</p>
+                        </div>
+                    </div>
+                </div>  
+        }
+    </div>
+</div>*@
 <!-- /.container-fluid -->
 @section Scripts{
     <script src="~/js/toatr.js"></script>
