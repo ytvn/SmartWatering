@@ -31,6 +31,10 @@ namespace BookListMVC.Controllers
         {
             return Json( await _context.Variable.ToListAsync());
         }
+        public async Task<IActionResult> OverView()
+        {
+            return View(await _context.Device.ToListAsync());
+        }
 
         public IActionResult Privacy()
         {

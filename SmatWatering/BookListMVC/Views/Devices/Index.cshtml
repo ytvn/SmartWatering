@@ -4,79 +4,22 @@
 
 
 
-@*<div class="col-12 border p-3">
 
-        <table id="devices-table" class="table table-striped table-bordered" style="width:100%">
-            <thead>
-                <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.ChipId)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Description)
-                    </th>
-                    <th></th>
-                </tr>
-            </thead>
-        </table>
-    </div>
-        <script src="~/js/table/deviceTable.js"></script>
-        <script src="~/js/toatr.js"></script></script>*@
-@*<table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.ChipId)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Description)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.CreatedDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.UpdatedDate)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-    <tr>
-        <td>
-            <a asp-controller="DevicePins" asp-action="Details" asp-route-id="@item.ChipId"> @Html.DisplayFor(modelItem => item.ChipId)</a>
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Description)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CreatedDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.UpdatedDate)
-        </td>
-        <td>
-            <a asp-action="Edit" asp-route-id="@item.DeviceId"><i style="margin-right : 5px" class="text-info fas fa-pen fa-lg"></i> </a> |
-            <a asp-action="Delete" asp-route-id="@item.DeviceId"> <i style="margin-left : 5px" class="text-danger fas fa-trash fa-lg"></i></a>
-        </td>
-    </tr>            }
-        </tbody>
-    </table>*@
 <!-- Begin Page Content -->
 <div class="container-fluid">
 
-    <!-- Page Heading -->
+     Page Heading 
     <h1 class="h3 mb-2 text-gray-800 text-info">Devices</h1>
 
     <p class="mb-4">
         >
         <a asp-action="Create">Create New</a>
     </p>
+
     @*<h1 class="h3 mb-2 text-gray-800">Tables</h1>
         <p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below. For more information about DataTables, please visit the <a target="_blank" href="https://datatables.net">official DataTables documentation</a>.</p>*@
 
-    <!-- DataTales Example -->
+      
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">DataTables</h6>
@@ -148,6 +91,39 @@
     </div>
 
 </div>
+@*<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <h2 class="text-black">List of devices </h2>
+        </div>
+        <div class="col-6 text-right">
+            <a class="btn btn-primary text-white" asp-action="Create"><i class="fas fa-plus"></i> &nbsp; Create New Device </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        @foreach (var item in Model)
+        {
+                <div class="col-md-4 col-sm-6 col-xs-12">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading ellipsis">
+                            <a asp-controller="DevicePins" asp-action="Details" asp-route-id="@item.ChipId"> <i class="fa fa-chart-bar"></i>    </a>
+                            
+                            
+                            <a asp-controller="DevicePins" asp-action="Details" asp-route-id="@item.ChipId"> @Html.DisplayFor(modelItem => item.ChipId)</a>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-6 col-xs-6">Chip Id</div>
+                                <div class="col-sm-6 col-xs-6"><b>@item.ChipId</b></div>
+                            </div>
+                            <p class="public-channel-description">@item.Description</p>
+                        </div>
+                    </div>
+                </div>  
+        }
+    </div>
+</div>*@
 <!-- /.container-fluid -->
 <script src="~/js/table/sb-admin-2.js"></script>
 <script src="~/js/demo/datatables-demo.js"></script>

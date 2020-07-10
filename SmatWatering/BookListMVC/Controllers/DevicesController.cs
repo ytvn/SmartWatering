@@ -168,5 +168,6 @@ namespace SmartWatering.Controllers
         {
             return _context.Device.Any(e => e.DeviceId == id);
         }
+        
     }
 }

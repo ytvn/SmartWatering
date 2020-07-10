@@ -102,8 +102,15 @@ var config = {
 			}]
 		},
 		tooltips: {
+			enabled: true,
 			mode: 'nearest',
-			intersect: false
+			intersect: false,
+			fixed: {
+				enabled: false,
+				position: 'topLeft',
+				offsetX: 0,
+				offsetY: 0,
+			},
 		},
 		hover: {
 			mode: 'nearest',
@@ -131,6 +138,7 @@ window.onload = function () {
 
 	var ctx = document.getElementById('myChart').getContext('2d');
 	window.myChart = new Chart(ctx, config);
+	
 
 
 };
