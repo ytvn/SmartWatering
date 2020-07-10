@@ -53,6 +53,10 @@ namespace BookListMVC
                     context.User.HasClaim(claim => claim.Type == "Edit Role" && claim.Value == "true") ||
                     context.User.IsInRole("Super Admin")));
 
+                options.AddPolicy("AdminPolicy", policy => policy.RequireAssertion(context =>
+                   context.User.IsInRole("Admin") &&
+                   context.User.HasClaim(claim => (claim.Type == "Edit All Role" && claim.Value == "true") || (claim.Type == "Read All Role" && claim.Value == "true") || (claim.Type == "Update All Role" && claim.Value == "true")) ||
+                   context.User.IsInRole("Super Admin")));
                 options.AddPolicy("AdminRolePolicy",
                     policy => policy.RequireRole("Admin"));
             });

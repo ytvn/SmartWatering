@@ -8,6 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using BookListMVC.Models;
 using SmartWatering.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using SmartWatering.Models;
+using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
+
 
 namespace SmartWatering.Controllers
 {
@@ -15,22 +20,25 @@ namespace SmartWatering.Controllers
     public class DevicesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> userManager;
+        private IAuthorizationService authorizationService;
 
-        public DevicesController(ApplicationDbContext context)
+
+        public DevicesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager,
+            IAuthorizationService authorizationService)
         {
             _context = context;
+            this.userManager = userManager;
+            this.authorizationService = authorizationService;
         }
-        public async Task<IActionResult> GetInfo()
+        public IActionResult GetInfo()
         {
             var val = _context.Device.Select(x => new { x.Description, x.ChipId });
             return new JsonResult(val);
         }
         // GET: Devices
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Device.ToListAsync());
-        }
-        public async Task<IActionResult> ApiIndex()
+       
+        public IActionResult ApiIndex()
         {
             var count = _context.Device.Count();
             var devices = from v in _context.Device
@@ -43,23 +51,16 @@ namespace SmartWatering.Controllers
             return Json(new { quantity = count, data = devices });
         }
 
-        // GET: Devices/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Index()
         {
-            if (id == null)
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
             {
-                return NotFound();
+                return View(await _context.Device.ToListAsync());
             }
-
-            var device = await _context.Device
-                .FirstOrDefaultAsync(m => m.DeviceId == id);
-            if (device == null)
-            {
-                return NotFound();
-            }
-
-            return View(device);
+            return View(await _context.Device.Where(c => c.CreatedBy == LoginUserId).ToListAsync());
         }
+       
 
         // GET: Devices/Create
         public IActionResult Create()
@@ -72,8 +73,17 @@ namespace SmartWatering.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DeviceId,ChipId,Description")] Device device)
+        public  IActionResult Create([Bind("DeviceId,ChipId,Description")] Device device)
         {
+
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (LoginUserId == null)
+            {
+                ViewBag.ErrorMessage = $"User with Id = {LoginUserId} cannot be found";
+                return View("NotFound");
+            }
+            device.CreatedBy = LoginUserId;
+            device.UpdatedBy = LoginUserId;
             if (ModelState.IsValid)
             {
                 _context.Add(device);
@@ -88,13 +98,20 @@ namespace SmartWatering.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var device = await _context.Device.FindAsync(id);
+            
             if (device == null)
             {
-                return NotFound();
+                return View("NotFound");
+            }
+            if(device.CreatedBy!=LoginUserId && !(await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
+            {
+                return View("AccessDenied");
             }
             return View(device);
         }
@@ -106,16 +123,17 @@ namespace SmartWatering.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("DeviceId,ChipId,Description")] Device device)
         {
-
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id != device.DeviceId)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    device.UpdatedBy = LoginUserId;
                     _context.Update(device);
                     await _context.SaveChangesAsync();
                 }
@@ -123,7 +141,7 @@ namespace SmartWatering.Controllers
                 {
                     if (!DeviceExists(device.DeviceId))
                     {
-                        return NotFound();
+                        return View("NotFound");
                     }
                     else
                     {
@@ -135,38 +153,31 @@ namespace SmartWatering.Controllers
             return View(device);
         }
 
-        // GET: Devices/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var device = new Device();
+            if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
             {
-                return NotFound();
+                device = await _context.Device.FindAsync(id);
             }
-
-            var device = await _context.Device
-                .FirstOrDefaultAsync(m => m.DeviceId == id);
+            else
+            {
+                device = await _context.Device.Where(c => c.CreatedBy == LoginUserId && c.DeviceId == id)
+                    .FirstOrDefaultAsync();
+            }
             if (device == null)
-            {
-                return NotFound();
-            }
-
-            return View(device);
-        }
-
-        // POST: Devices/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var device = await _context.Device.FindAsync(id);
+                return Json(new { status = false, message = "Error while Deleting" });
             _context.Device.Remove(device);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Json(new { status = true, message = "Delete successful" });
+            
         }
-
         private bool DeviceExists(int id)
         {
             return _context.Device.Any(e => e.DeviceId == id);
         }
+
     }
 }

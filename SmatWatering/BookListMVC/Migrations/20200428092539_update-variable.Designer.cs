@@ -69,7 +69,7 @@ namespace SmartWatering.Migrations
 
                     b.HasKey("PinId");
 
-                    b.ToTable("DevicePIn");
+                    b.ToTable("DevicePin");
                 });
 
             modelBuilder.Entity("BookListMVC.Models.Trigger", b =>

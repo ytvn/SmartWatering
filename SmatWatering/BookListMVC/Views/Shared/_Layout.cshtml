@@ -103,6 +103,7 @@
             </li>
             @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
             {
+                     @*<div> @signInManager.UserManager.GetUserId User.Identity.Name;</div>*@
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
                         <i class="fas fa-lock"></i>

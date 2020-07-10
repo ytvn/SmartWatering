@@ -13,11 +13,9 @@
                 type: "DELETE",
                 url: url,
                 success: function (data) {
-                    console.log(data);
                     if (data.status) {
                         Noti("Delete item", "success");
-                        //toastr.success(data.message);
-                        table ? dataTable.ajax.reload() : null;
+                        table ? dataTable.ajax.reload() : location.reload(true);
                     }
                     else {
                         Noti("Delete item", "error");

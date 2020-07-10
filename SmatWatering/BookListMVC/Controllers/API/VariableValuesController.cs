@@ -68,7 +68,7 @@ namespace SmartWatering.Controllers.API
 
         //    if (variableValue == null)
         //    {
-        //        return NotFound();
+        //        return View("NotFound");
         //    }
 
         //    return variableValue;

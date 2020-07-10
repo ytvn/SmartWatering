@@ -31,14 +31,14 @@ namespace SmartWatering.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             var schedule = await _context.Schedule
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (schedule == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             return View(schedule);
@@ -98,13 +98,13 @@ namespace SmartWatering.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             var schedule = await _context.Schedule.FindAsync(id);
             if (schedule == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
             return View(schedule);
         }
@@ -118,7 +118,7 @@ namespace SmartWatering.Controllers
         {
             if (id != schedule.Id)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             if (ModelState.IsValid)
@@ -132,7 +132,7 @@ namespace SmartWatering.Controllers
                 {
                     if (!ScheduleExists(schedule.Id))
                     {
-                        return NotFound();
+                        return View("NotFound");
                     }
                     else
                     {
@@ -149,14 +149,14 @@ namespace SmartWatering.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             var schedule = await _context.Schedule
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (schedule == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             return View(schedule);

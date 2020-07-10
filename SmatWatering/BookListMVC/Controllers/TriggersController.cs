@@ -38,14 +38,14 @@ namespace SmartWatering.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             var trigger = await _context.Trigger
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (trigger == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             return View(trigger);
@@ -74,7 +74,7 @@ namespace SmartWatering.Controllers
                 _context.SaveChanges();
                 var item = from t in _context.Trigger
                            join v in _context.Variable on t.VariableId equals v.VariableId
-                           join d in _context.DevicePIn on v.PinId equals d.PinId
+                           join d in _context.DevicePin on v.PinId equals d.PinId
                            where t.VariableId == trigger.VariableId
                            select new { d.chipId };
                 var e = SocketServer.Sockets.First(kvp =>kvp.Value== Convert.ToString(item.FirstOrDefault().chipId));
@@ -112,13 +112,13 @@ namespace SmartWatering.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             var trigger = await _context.Trigger.FindAsync(id);
             if (trigger == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
             return View(trigger);
         }
@@ -132,7 +132,7 @@ namespace SmartWatering.Controllers
         {
             if (id != trigger.Id)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             if (ModelState.IsValid)
@@ -146,7 +146,7 @@ namespace SmartWatering.Controllers
                 {
                     if (!TriggerExists(trigger.Id))
                     {
-                        return NotFound();
+                        return View("NotFound");
                     }
                     else
                     {
@@ -163,14 +163,14 @@ namespace SmartWatering.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             var trigger = await _context.Trigger
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (trigger == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             return View(trigger);

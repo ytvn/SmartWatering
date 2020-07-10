@@ -29,11 +29,11 @@ namespace SmartWatering.Migrations
 
             migrationBuilder.DropColumn(
                 name: "CreateDate",
-                table: "DevicePIn");
+                table: "DevicePin");
 
             migrationBuilder.DropColumn(
                 name: "UpdateDate",
-                table: "DevicePIn");
+                table: "DevicePin");
 
             migrationBuilder.DropColumn(
                 name: "CreateDate",
@@ -75,13 +75,13 @@ namespace SmartWatering.Migrations
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "CreatedDate",
-                table: "DevicePIn",
+                table: "DevicePin",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "UpdatedDate",
-                table: "DevicePIn",
+                table: "DevicePin",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
@@ -122,11 +122,11 @@ namespace SmartWatering.Migrations
 
             migrationBuilder.DropColumn(
                 name: "CreatedDate",
-                table: "DevicePIn");
+                table: "DevicePin");
 
             migrationBuilder.DropColumn(
                 name: "UpdatedDate",
-                table: "DevicePIn");
+                table: "DevicePin");
 
             migrationBuilder.DropColumn(
                 name: "CreatedDate",
@@ -173,14 +173,14 @@ namespace SmartWatering.Migrations
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "CreateDate",
-                table: "DevicePIn",
+                table: "DevicePin",
                 type: "datetime2",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "UpdateDate",
-                table: "DevicePIn",
+                table: "DevicePin",
                 type: "datetime2",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));

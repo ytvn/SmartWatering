@@ -12,6 +12,8 @@ namespace SmartWatering.Models.ViewModels
         public string VariableName { get; set; }
         public string PIN { get; set; }
         public int ChipId { get; set; }
+        public int VariableId { get; set; }
         public string CreatedDate { get; set; }
+        public string  CreatedBy { get; set; }
     }
 }

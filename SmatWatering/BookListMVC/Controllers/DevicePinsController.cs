@@ -6,53 +6,66 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BookListMVC.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using SmartWatering.Models;
+using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SmartWatering.Controllers
 {
     public class DevicePinsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public DevicePinsController(ApplicationDbContext context)
+        private readonly UserManager<ApplicationUser> userManager;
+        private IAuthorizationService authorizationService;
+        public DevicePinsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager,
+            IAuthorizationService authorizationService)
         {
             _context = context;
+            this.userManager = userManager;
+            this.authorizationService = authorizationService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetInfo(int _chipId)
+        public  IActionResult GetInfo(int _chipId)
         {
-            var val = _context.DevicePIn.Where(x => x.chipId == _chipId).Select(x => new { value = x.PIN +": "+x.Description, x.PIN });
+            var val = _context.DevicePin.Where(x => x.chipId == _chipId).Select(x => new { value = x.PIN +": "+x.Description, x.PIN });
             return new JsonResult(val);
         }
 
         // GET: DevicePins
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int?id )
         {
-            return View(await _context.DevicePIn.ToListAsync());
-        }
-
-        // GET: DevicePins/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id == null)
             {
-                return NotFound();
+                if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
+                {
+                    return View(await _context.DevicePin.ToListAsync());
+                }
+                return View(await _context.DevicePin.Where(c => c.CreatedBy == LoginUserId).ToListAsync());
             }
-
-            var devicePin = await _context.DevicePIn
-                .ToListAsync();
-            var devicePins = devicePin.Where(m => m.chipId == id);
-            if (devicePins == null)
+            else
             {
-                return NotFound();
+                if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
+                {
+                    return View(await _context.DevicePin.Where(m => m.chipId == id).ToListAsync());
+                }
+                return View(await _context.DevicePin.Where(c => c.CreatedBy == LoginUserId && c.chipId==id).ToListAsync());
             }
-
-            return View(devicePins);
         }
 
         // GET: DevicePins/Create
         public IActionResult Create()
         {
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var value = from c in _context.Device
+                        where c.CreatedBy == LoginUserId
+                        select c.ChipId;
+            ViewBag.Chips=  value;
+
             return View();
         }
 
@@ -61,8 +74,12 @@ namespace SmartWatering.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PinId,PIN,chipId,Description")] DevicePin devicePin)
+        public IActionResult Create([Bind("PinId,PIN,chipId,Description")] DevicePin devicePin)
         {
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            devicePin.CreatedBy = LoginUserId;
+            devicePin.UpdatedBy = LoginUserId;
             if (ModelState.IsValid)
             {
                 _context.Add(devicePin);
@@ -77,14 +94,26 @@ namespace SmartWatering.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
-            var devicePin = await _context.DevicePIn.FindAsync(id);
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var devicePin = await _context.DevicePin.FindAsync(id);
+
             if (devicePin == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
+            if (devicePin.CreatedBy != LoginUserId && !(await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
+            {
+                return View("AccessDenied");
+            }
+
+            var value = from c in _context.Device
+                        where c.CreatedBy == LoginUserId
+                        select c.ChipId;
+            ViewBag.Chips = value;
             return View(devicePin);
         }
 
@@ -93,17 +122,20 @@ namespace SmartWatering.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PinId,PIN,chipId,Description,CreatedDate,UpdatedDate")] DevicePin devicePin)
+        public IActionResult Edit(int id, [Bind("PinId,PIN,chipId,Description,CreatedDate,UpdatedDate")] DevicePin devicePin)
         {
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             if (id != devicePin.PinId)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    devicePin.UpdatedBy = LoginUserId;
                     _context.Update(devicePin);
                   _context.SaveChanges();
                 }
@@ -111,7 +143,7 @@ namespace SmartWatering.Controllers
                 {
                     if (!DevicePinExists(devicePin.PinId))
                     {
-                        return NotFound();
+                        return View("NotFound");
                     }
                     else
                     {
@@ -123,38 +155,31 @@ namespace SmartWatering.Controllers
             return View(devicePin);
         }
 
-        // GET: DevicePins/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var devicePin = new DevicePin();
+            if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
             {
-                return NotFound();
+                devicePin = await _context.DevicePin.FindAsync(id);
             }
-
-            var devicePin = await _context.DevicePIn
-                .FirstOrDefaultAsync(m => m.PinId == id);
+            else
+            {
+                devicePin = await _context.DevicePin.Where(c => c.CreatedBy == LoginUserId && c.PinId == id)
+                    .FirstOrDefaultAsync();
+            }
             if (devicePin == null)
-            {
-                return NotFound();
-            }
+                return Json(new { status = false, message = "Error while Deleting" });
+            _context.DevicePin.Remove(devicePin);
+            await _context.SaveChangesAsync();
+            return Json(new { status = true, message = "Delete successful" });
 
-            return View(devicePin);
-        }
-
-        // POST: DevicePins/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var devicePin = await _context.DevicePIn.FindAsync(id);
-            _context.DevicePIn.Remove(devicePin);
-          _context.SaveChanges();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool DevicePinExists(int id)
         {
-            return _context.DevicePIn.Any(e => e.PinId == id);
+            return _context.DevicePin.Any(e => e.PinId == id);
         }
     }
 }
