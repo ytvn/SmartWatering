@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SmartWatering.Models;
+using SmartWatering.Data;
 
 namespace BookListMVC
 {
@@ -60,6 +61,9 @@ namespace BookListMVC
                 options.AddPolicy("AdminRolePolicy",
                     policy => policy.RequireRole("Admin"));
             });
+
+            services.AddDbContext<SmartWateringContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("SmartWateringContext")));
 
 
         }
