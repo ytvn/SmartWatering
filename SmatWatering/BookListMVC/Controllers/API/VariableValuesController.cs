@@ -110,9 +110,20 @@ namespace SmartWatering.Controllers.API
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<VariableValue>> PostVariableValue(List<VariableValue> variableValue)
+        public  async Task<ActionResult<VariableValue>> PostVariableValue(List<VariableValue> variableValue)
         {
-           foreach(var v in variableValue)
+            var ss = variableValue[0].VariableId;
+           var Token = this.Request.Headers.FirstOrDefault(c => c.Key=="Token").Value.ToString();
+
+            var WriteToken = await (from vv in  _context.VariableValue
+                             join v in _context.Variable on vv.VariableId equals v.VariableId
+                             join dp in _context.DevicePin on v.PinId equals dp.PinId
+                             join d in _context.Device on dp.chipId equals d.ChipId
+                        where vv.VariableId == ss
+                        select d.WriteAPIKey).FirstOrDefaultAsync();
+            if (Token != WriteToken)
+                return StatusCode(403);
+            foreach (var v in variableValue)
             {
                 _context.VariableValue.Add(v);
                 _context.SaveChanges();

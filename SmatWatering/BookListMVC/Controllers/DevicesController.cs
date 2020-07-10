@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using SmartWatering.Models;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
-
+using SmartWatering.Util;
 
 namespace SmartWatering.Controllers
 {
@@ -84,6 +84,8 @@ namespace SmartWatering.Controllers
             }
             device.CreatedBy = LoginUserId;
             device.UpdatedBy = LoginUserId;
+            device.WriteAPIKey = GenerateToken.Generate();
+            device.ReadAPIKey = GenerateToken.Generate();
             if (ModelState.IsValid)
             {
                 _context.Add(device);
