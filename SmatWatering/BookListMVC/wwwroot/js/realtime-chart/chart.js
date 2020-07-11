@@ -1,6 +1,7 @@
 ﻿var model = [];
 var listChart = {};
 var Id;
+var domain = "http://localhost:5005";
 window.onload = function () {
     Id = window.location.href.slice(-1);
     if (isNaN(parseInt(Id))) {
@@ -9,7 +10,7 @@ window.onload = function () {
     console.log(Id);
     $.ajax({
         type: "GET",
-        url: "http://localhost:5005/home/GetVariables/"+Id,
+        url: domain + "/home/GetVariables/" + Id,
         async: false,
         success: function (data) {
             model = data;
@@ -22,16 +23,15 @@ window.onload = function () {
         //document.getElementById("border-" + model[i].variableId).style.border = "thick solid " + chartColors[i % 7]
         //document.getElementById("border-" + model[i].variableId).style.borderTop = "thick solid " + chartColors[i % 7]
         document.getElementById("border-" + model[i].variableId).style.borderLeft = "thick solid " + chartColors[i % 7]
-        //document.getElementById("bborder-" + model[i].variableId).style.borderBottom = "thick solid " + chartColors[i % 7]
         document.getElementById("text-" + model[i].variableId).style.webkitTextFillColor = chartColors[i % 7]
-        
+
     }
 }
 function generateData() {
     var value;
     $.ajax({
         type: "GET",
-        url: "http://localhost:5005/home/GetVariableValues/" + Id,
+        url: domain + "/home/GetVariableValues/" + Id,
         async: false,
         success: function (data) {
             value = data;
@@ -100,7 +100,7 @@ function newSeries(name, color) {
                     reset: true | '<img src="/static/icons/reset.png" width="20">',
                     customIcons: []
                 },
-                autoSelected: 'zoom' 
+                autoSelected: 'zoom'
             }
         },
         dataLabels: {
@@ -116,12 +116,12 @@ function newSeries(name, color) {
         colors: color,
         stroke: {
             curve: 'smooth',
-            width: 2,
+            width: 2
         },
         yaxis: {
             type: 'linear',
             min: 0,
-            max:1,
+            max :100,
             labels: {
                 formatter: function (val) {
                     return (val).toFixed(2);
@@ -133,9 +133,9 @@ function newSeries(name, color) {
         },
         xaxis: {
             type: 'datetime',
-            range: 10000,
+            range: 4000,
             categories: [],
-            tickPlacement: 'on',
+            //tickPlacement: 'on',
             labels: {
                 /**
                 * Allows users to apply a custom formatter function to xaxis labels.
@@ -147,10 +147,10 @@ function newSeries(name, color) {
                 formatter: function (value, timestamp, index) {
                     return moment(new Date(timestamp)).format('HH:mm:ss')
                 },
-                
+
             },
         },
-        
+
     };
 }
 
