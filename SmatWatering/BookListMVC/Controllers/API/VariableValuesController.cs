@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using SmartWatering.Models.ViewModels;
 using Nancy.Json;
 using Newtonsoft.Json;
+using SmartWatering.Util;
 
 namespace SmartWatering.Controllers.API
 {
@@ -44,15 +45,20 @@ namespace SmartWatering.Controllers.API
             var val = _context.VariableValue.Where(x => x.VariableId == VariableId).OrderByDescending(x => x.VariableValueId).Take(1).Select(x => new { Value = Math.Round(x.Value, 2) });
             return new JsonResult(val);
         }
-        //GET: api/variablevalue/Average
-        [HttpGet("average")]
-        public ActionResult Average()
+        //GET: api/variablevalues/Average/5 // id of device
+        [HttpGet("average/{id}")]
+        public ActionResult Average(int type, int id)
         {
+            var variables = from v in _context.Variable
+                                 join dp in _context.DevicePin on v.PinId equals dp.PinId
+                                 join vv in _context.VariableValue on v.VariableId equals vv.VariableId
+                                 where dp.PinType == PinType.IN && dp.chipId == id
+                                 select vv;
             int now = DateTime.Now.Day;
             var val = _context.VariableValue
-                .Where(x => (x.VariableId == 1 || x.VariableId == 2 || x.VariableId == 3) && x.CreatedDate.Day == now)
-                .GroupBy(x => x.VariableId)
-                .Select(y => new { VariableId = y.Key, Quantity = Math.Round(y.Average(x => x.Value), 2) });
+                        .Where(x =>  x.CreatedDate.Day == now)
+                        .GroupBy(x => x.VariableId)
+                        .Select(y => new { VariableId = y.Key, Average = Math.Round(y.Max(x => x.Value), 2) });
             return new JsonResult(val);
         }
 

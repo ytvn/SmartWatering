@@ -73,10 +73,7 @@ namespace BookListMVC.Controllers
             return View(await _context.Device.ToListAsync());
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
@@ -127,11 +124,13 @@ namespace BookListMVC.Controllers
                 return Json(new { });
             var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var variables = _context.Variable;
+            // Join to filter variable of Input Pin only
             var variableValues = from v in variables
                                  join dp in _context.DevicePin on v.PinId equals dp.PinId
                                  join vv in _context.VariableValue on v.VariableId equals vv.VariableId
                                  where dp.PinType == PinType.IN && dp.chipId == id
                                  select vv;
+            //Group by to select the lastest value of each Variable
             var firstItemsInGroup = variableValues.GroupBy(c => c.VariableId)
                                     .Select(s => new
                                     {
@@ -140,6 +139,7 @@ namespace BookListMVC.Controllers
                                     });
             if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
             {
+                //Join to select Value of Variable
                 return Json(from f in firstItemsInGroup
                             join v in variableValues on f.VariableId equals v.VariableId
                             where f.VariableValueId == v.VariableValueId
@@ -160,6 +160,50 @@ namespace BookListMVC.Controllers
                         });
 
         }
+        //http://localhost:5005/home/average/?type=1&id=3
+        [HttpGet]
+        public async Task<IActionResult> Average(int type, int? id)
+        {
+            if (id == null)
+                return Json(new { });
 
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var variables = await _context.Variable.ToListAsync();
+
+            // Join to filter variable of Input Pin only and value only for 1 device
+            var variableValues = from v in variables
+                                 join dp in _context.DevicePin on v.PinId equals dp.PinId
+                                 join vv in _context.VariableValue on v.VariableId equals vv.VariableId
+                                 where dp.PinType == PinType.IN && dp.chipId == id
+                                 select vv;
+            if (!(await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
+            {
+                variableValues = from vv in variableValues
+                                 join v in variables on vv.VariableId equals v.VariableId
+                                 where v.CreatedBy == LoginUserId
+                                 select vv;
+            }
+
+            if (type == 1)
+                variableValues = variableValues.Where(c => DateTime.Now.Day == c.CreatedDate.Day);
+            else if (type == 2)
+                variableValues = variableValues.Where(c => IsInWeek(c.CreatedDate.Day));
+            else if (type == 3)
+                variableValues = variableValues.Where(c => DateTime.Now.Month == c.CreatedDate.Month);
+
+
+            return new JsonResult(variableValues
+                                .GroupBy(x => x.VariableId)
+                                .Select(y => new { VariableId = y.Key, Average = Math.Round(y.Average(x => x.Value), 2) }));
+        }
+        private bool IsInWeek(int day)
+        {
+            var now = (int)DateTime.Now.DayOfWeek;
+            var begin = DateTime.Now.Day - now;
+            var end = DateTime.Now.Day + (7 - now);
+            if (day >= begin && day <= end)
+                return true;
+            return false;
+        }
     }
 }
