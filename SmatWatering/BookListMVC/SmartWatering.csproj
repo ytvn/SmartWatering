@@ -7,6 +7,8 @@
   <ItemGroup>
     <Compile Remove="Migrations\20200627170725_ExtendIdentityUser.cs" />
     <Compile Remove="Migrations\20200627170725_ExtendIdentityUser.Designer.cs" />
+    <Compile Remove="Migrations\20200706150603_add created in device.cs" />
+    <Compile Remove="Migrations\20200706150603_add created in device.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,7 +8,7 @@ namespace SmartWatering.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "DevicePIn",
+                name: "DevicePin",
                 columns: table => new
                 {
                     PinId = table.Column<int>(nullable: false)
@@ -79,7 +79,7 @@ namespace SmartWatering.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DevicePIn");
+                name: "DevicePin");
 
             migrationBuilder.DropTable(
                 name: "Trigger");

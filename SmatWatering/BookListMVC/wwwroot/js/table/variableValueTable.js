@@ -3,14 +3,14 @@ var count;
 $(document).ready(function () {
     loadDataTable();
     count = 0;
-    realTime();
+    //realTime();
 });
 
 function realTime() {
     setInterval(function () {
         $.ajax({
             type: "GET",
-            url: "http://localhost:5005/VariableValues/ApiIndex",
+            url: "/VariableValues/ApiIndex",
             success: function (data) {
                 console.log(count);
                 if (data.quantity > count) {
@@ -30,7 +30,7 @@ function loadDataTable() {
     dataTable = $('#DT_load').DataTable({
         //"ordering": false,
         "ajax": {
-            "url": "VariableValues/ApiIndex",
+            "url": "/VariableValues/ApiIndex",
             "type": "GET",
             "datatype": "json"
         },
@@ -44,7 +44,7 @@ function loadDataTable() {
                 "data": "variableValueId",
                 "render": function (data) {
                     return `<div class="text-center">
-                        <a class="text-danger" onclick=Delete('/VariableValues/Delete?id='+${data},true)>
+                        <a class="text-danger" onclick=Delete('/VariableValues/Delete/'+${data},true)>
                             <i  class="fas fa-trash fa-lg"></i>
                         </a>
                         </div>`;
@@ -62,28 +62,3 @@ function loadDataTable() {
         .draw();
 }
 
-//function Delete(url) {
-//    swal({
-//        title: "Are you sure?",
-//        text: "Once deleted, you will not be able to recover",
-//        icon: "warning",
-//        buttons: true,
-//        dangerMode: true
-//    }).then((willDelete) => {
-//        if (willDelete) {
-//            $.ajax({
-//                type: "DELETE",
-//                url: url,
-//                success: function (data) {
-//                    if (data.success) {
-//                        toastr.success(data.message);
-//                        dataTable.ajax.reload();
-//                    }
-//                    else {
-//                        toastr.error(data.message);
-//                    }
-//                }
-//            });
-//        }
-//    });
-//}

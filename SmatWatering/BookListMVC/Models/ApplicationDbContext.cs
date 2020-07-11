@@ -45,7 +45,7 @@ namespace BookListMVC.Models
 
         public DbSet<BookListMVC.Models.Device> Device { get; set; }
         public DbSet<SmartWatering.Models.Schedule> Schedule { get; set; }
-        public DbSet<BookListMVC.Models.DevicePin> DevicePIn { get; set; }
+        public DbSet<BookListMVC.Models.DevicePin> DevicePin { get; set; }
         public DbSet<BookListMVC.Models.Trigger> Trigger { get; set; }
         public DbSet<BookListMVC.Models.Variable> Variable { get; set; }
         public DbSet<BookListMVC.Models.VariableValue> VariableValue { get; set; }

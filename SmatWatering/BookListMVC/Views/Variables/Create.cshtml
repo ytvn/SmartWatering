@@ -1,33 +1,16 @@
-﻿@model BookListMVC.Models.Variable
+﻿@model VariableView
 
 @{
     ViewData["Title"] = "Create";
+    var Values = (List<DevicePin>)ViewBag.Values;
+    var ChipIds = Values.Select(c => c.chipId).Distinct().ToList();
 }
 
 <h1>Create</h1>
 
 <h4>Variable</h4>
 <hr />
-@*<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="VariableName" class="control-label"></label>
-                <input asp-for="VariableName" class="form-control" />
-                <span asp-validation-for="VariableName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PinId" class="control-label"></label>
-                <input asp-for="PinId" class="form-control" />
-                <span asp-validation-for="PinId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>*@
+
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-lg-6">
@@ -42,17 +25,26 @@
 
                             <div class="form-group row justify-content-center">
                                 <label asp-for="VariableName" class="control-label col-4"></label>
-                                <input asp-for="VariableName" id="VariableName" class="form-control col-5">
-                                </input>
+                                <input asp-for="VariableName" class="form-control col-5">
                                 <span asp-validation-for="VariableName" class="text-danger"></span>
                             </div>
                             <div class="form-group row justify-content-center">
-                                <label asp-for="PinId" class="control-label col-4"></label>
-                                <input asp-for="PinId" id="PinId" class="form-control col-5">
-                                </input>
-                                <span asp-validation-for="PinId" class="text-danger"></span>
+                                <label asp-for="ChipId" class="control-label col-4"></label>
+                                <select asp-for="ChipId" class="form-control col-5" onchange="Load()">
+                                    @{foreach (var e in ChipIds)
+                                        {
+                                            <option value="@e">@e</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="ChipId" class="text-danger"></span>
                             </div>
-
+                            <div class="form-group row justify-content-center">
+                                <label asp-for="PIN" class="control-label col-4"></label>
+                                <select asp-for="PIN" class="form-control col-5"></select>
+                                <span asp-validation-for="PIN" class="text-danger"></span>
+                            </div>
+                            
                             <div class="form-group row justify-content-center">
                                 <input type="submit" value="Create" class="btn btn-primary btn-icon-split btn-lg  col-3 " />
                             </div>
@@ -67,4 +59,5 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-
+<script src="~/js/Load.js"></script>
+   

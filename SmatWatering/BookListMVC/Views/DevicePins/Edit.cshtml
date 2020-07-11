@@ -1,39 +1,13 @@
 ﻿@model BookListMVC.Models.DevicePin
-
 @{
     ViewData["Title"] = "Edit";
-}
+    var Chips = ViewBag.Chips;
 
+}
 <h1>Edit</h1>
 
 <h4>DevicePin</h4>
 <hr />
-@*<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="PinId" />
-            <div class="form-group">
-                <label asp-for="PIN" class="control-label"></label>
-                <input asp-for="PIN" class="form-control" />
-                <span asp-validation-for="PIN" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="chipId" class="control-label"></label>
-                <input asp-for="chipId" class="form-control" />
-                <span asp-validation-for="chipId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>*@
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-lg-6">
@@ -60,8 +34,13 @@
                             </div>
                             <div class="form-group row justify-content-center">
                                 <label asp-for="chipId" class="control-label col-4"></label>
-                                <input asp-for="chipId" id="chipId" class="form-control col-5">
-                                </input>
+                                <select asp-for="chipId" class="form-control col-5">
+                                    @{foreach (var e in Chips)
+                                        {
+                                            <option value="@e">@e</option>
+                                        }
+                                    }
+                                </select>
                                 <span asp-validation-for="chipId" class="text-danger"></span>
                             </div>
                             <div class="form-group row justify-content-center">

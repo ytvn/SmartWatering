@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BookListMVC.Models;
 using Microsoft.AspNetCore.Authorization;
+using SmartWatering.Models.ViewModels;
+using Nancy.Json;
+using Newtonsoft.Json;
 
 namespace SmartWatering.Controllers.API
 {
@@ -36,9 +39,9 @@ namespace SmartWatering.Controllers.API
         }
         //GET: api/SensorValues
         [HttpGet("{VariableId}")]
-         public ActionResult GetSensorValue(int VariableId)
+        public ActionResult GetSensorValue(int VariableId)
         {
-            var val = _context.VariableValue.Where(x => x.VariableId == VariableId).OrderByDescending(x => x.VariableValueId).Take(1).Select(x => new { Value = Math.Round(x.Value , 2) });
+            var val = _context.VariableValue.Where(x => x.VariableId == VariableId).OrderByDescending(x => x.VariableValueId).Take(1).Select(x => new { Value = Math.Round(x.Value, 2) });
             return new JsonResult(val);
         }
         //GET: api/variablevalue/Average
@@ -53,73 +56,66 @@ namespace SmartWatering.Controllers.API
             return new JsonResult(val);
         }
 
-        // GET: api/VariableValues
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<VariableValue>>> GetVariableValue()
-        //{
-        //    return await _context.VariableValue.ToListAsync();
-        //}
-
-        // GET: api/VariableValues/5
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<VariableValue>> GetVariableValue(int id)
-        //{
-        //    var variableValue = await _context.VariableValue.FindAsync(id);
-
-        //    if (variableValue == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return variableValue;
-        //}
-
-        // PUT: api/VariableValues/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutVariableValue(int id, VariableValue variableValue)
+        //GET: api/VariableValues/Get/{Token}
+        [HttpGet("Get/{Token}")]
+        public async Task<IActionResult> GetVariableValue(string Token)
         {
-            if (id != variableValue.VariableValueId)
+            //var variableValue = await _context.VariableValue.FindAsync(id);
+            var variableValues = _context.VariableValue;
+            var variables = _context.Variable;
+            var devicePin = _context.DevicePin;
+
+            var result = await (from vv in variableValues
+                                   join v in variables on vv.VariableId equals v.VariableId
+                                   join dp in devicePin on v.PinId equals dp.PinId
+                                   join d in _context.Device on dp.chipId equals d.ChipId
+                                   where d.ReadAPIKey == Token
+                                   select new VariableValueView
+                                   {
+                                       VariableValueId = vv.VariableValueId,
+                                       Value = vv.Value,
+                                       VariableName = v.VariableName,
+                                       PIN = dp.PIN,
+                                       ChipId = dp.chipId,
+                                       CreatedBy = v.CreatedBy,
+                                       VariableId = v.VariableId,
+                                       CreatedDate = v.CreatedDate.ToString("dd-mm-yyyy HH:mm:ss")
+                                   }).ToListAsync();
+            if (result == null || result.Count == 0)
             {
-                return BadRequest();
+                return StatusCode(403);
             }
 
-            _context.Entry(variableValue).State = EntityState.Modified;
+            var DeviceName = await (from vv in variableValues
+                                    join v in variables on vv.VariableId equals v.VariableId
+                                    join dp in devicePin on v.PinId equals dp.PinId
+                                    join d in _context.Device on dp.chipId equals d.ChipId
+                                    where d.ReadAPIKey == Token
+                                    select d.Description).FirstOrDefaultAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!VariableValueExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return new JsonResult(new { DeviceName= DeviceName, Data = result });
         }
 
+
         // POST: api/VariableValues
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
         public async Task<ActionResult<VariableValue>> PostVariableValue(List<VariableValue> variableValue)
         {
-           foreach(var v in variableValue)
+            var Token = this.Request.Headers.FirstOrDefault(c => c.Key == "Token").Value.ToString();
+
+            var WriteToken = await (from vv in _context.Variable.Where(e => e.VariableId == variableValue[0].VariableId)
+                              join v in _context.Variable on vv.VariableId equals v.VariableId
+                              join dp in _context.DevicePin on v.PinId equals dp.PinId
+                              join d in _context.Device on dp.chipId equals d.ChipId
+                              select d.WriteAPIKey).SingleOrDefaultAsync();
+            if (Token != WriteToken)
+                return StatusCode(403);
+            foreach (var v in variableValue)
             {
                 _context.VariableValue.Add(v);
                 _context.SaveChanges();
             }
-           
-           return NoContent();
-            //return CreatedAtAction("GetVariableValue", new { id = variableValue.VariableValueId }, variableValue);
+            return NoContent();
         }
 
         // DELETE: api/VariableValues/5

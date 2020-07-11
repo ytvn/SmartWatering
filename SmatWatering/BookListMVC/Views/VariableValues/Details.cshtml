@@ -1,57 +1,6 @@
-﻿@model IEnumerable<SmartWatering.Models.ViewModels.VariableValueView>
-
+﻿@model IEnumerable<VariableValueView>
 
 @{ ViewData["Title"] = "Details"; }
-
-@*<h1 class="text-info">Variable Values</h1>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.VariableName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Value)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.PIN)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ChipId)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.CreatedDate)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.VariableName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Value)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.PIN)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ChipId)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.CreatedDate)
-                    </td>
-                    <td>
-                        <a asp-action="Delete" asp-route-id="@item.VariableValueId"><i class="text-danger fas fa-trash fa-lg"></i></a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>*@
 
 <!-- Begin Page Content -->
 <div class="container-fluid">
@@ -59,8 +8,7 @@
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800 text-info">Variable Values</h1>
 
-    @*<h1 class="h3 mb-2 text-gray-800">Tables</h1>
-        <p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below. For more information about DataTables, please visit the <a target="_blank" href="https://datatables.net">official DataTables documentation</a>.</p>*@
+   
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
@@ -87,52 +35,32 @@
                             <th>
                                 @Html.DisplayNameFor(model => model.CreatedDate)
                             </th>
-                            <th></th>
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            <th>
-                                @Html.DisplayNameFor(model => model.VariableName)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Value)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.PIN)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.ChipId)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.CreatedDate)
-                            </th>
-                            <th></th>
-                        </tr>
-                    </tfoot>
                     <tbody>
                         @foreach (var item in Model)
                         {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.VariableName)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Value)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.PIN)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.ChipId)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.CreatedDate)
-                            </td>
-                            <td>
-                                <a asp-action="Delete" asp-route-id="@item.VariableValueId"><i class="text-danger fas fa-trash fa-lg"></i></a>
-                            </td>
-                        </tr>}
+                            <tr>
+                                <td>
+                                    <a> @Html.DisplayFor(modelItem => item.VariableName)</a>
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Value)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PIN)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ChipId)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                                </td>
+                                <td>
+                                    <a onclick='Delete("/VariableValues/Delete/@item.VariableValueId" ,false)'><i style="margin-left : 5px" class="text-danger fas fa-trash fa-lg"></i></a>
+                                </td>
+                            </tr>
+                        }
 
                     </tbody>
                 </table>
@@ -141,35 +69,7 @@
     </div>
 
 </div>
-<!-- /.container-fluid -->
-<script src="~/js/table/sb-admin-2.js"></script>
-<script src="~/js/demo/datatables-demo.js"></script>
-
-@*<div>
-        <h4>VariableValue</h4>
-        <hr />
-        <dl class="row">
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.Value)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.Value)
-            </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.VariableId)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.VariableId)
-            </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.CreatedDate)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.CreatedDate)
-            </dd>
-        </dl>
-    </div>
-    <div>
-        <a asp-action="Edit" asp-route-id="@Model.VariableValueId">Edit</a> |
-        <a asp-action="Index">Back to List</a>
-    </div>*@
+@section Scripts{
+    <script src="~/js/toatr.js"></script>
+    <script src="~/js/demo/datatables-demo.js"></script>
+}
