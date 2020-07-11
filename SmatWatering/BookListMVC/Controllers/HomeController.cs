@@ -7,6 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using BookListMVC.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using SmartWatering.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using SmartWatering.Util;
 
 namespace BookListMVC.Controllers
 {
@@ -14,23 +19,55 @@ namespace BookListMVC.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> userManager;
+        private IAuthorizationService authorizationService;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager,
+            IAuthorizationService authorizationService)
         {
-            _logger = logger;
             _context = context;
+            _logger = logger;
+            this.userManager = userManager;
+            this.authorizationService = authorizationService;
         }
-       
-        public async Task<IActionResult> Index()
+
+        // Nhan vao ID cua device
+        public async Task<IActionResult> Index(int? id)
         {
-            
-            return View(await _context.Variable.ToListAsync());
+            //return View(await _context.Variable.ToListAsync());
+            //Filter Pin Input only
+            var devicePins = _context.DevicePin;
+            var variables = from v in _context.Variable
+                            join dp in devicePins on v.PinId equals dp.PinId
+                            where dp.PinType == PinType.IN
+                            select v;
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (id == null)
+            {
+                if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
+                {
+                    return View(variables);
+                }
+                var x = await variables.Where(c => c.CreatedBy == LoginUserId).ToListAsync();
+                return View(await variables.Where(c => c.CreatedBy == LoginUserId).ToListAsync());
+            }
+            else
+            {
+                if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
+                {
+                    return View(from v in variables
+                                join dp in devicePins on v.PinId equals dp.PinId
+                                where dp.chipId == id
+                                select v);
+                }
+                return View(from v in variables
+                            join dp in devicePins on v.PinId equals dp.PinId
+                            where dp.chipId == id && v.CreatedBy == LoginUserId
+                            select v);
+            }
         }
-        [HttpGet]
-        public async Task<IActionResult> GetVariables()
-        {
-            return Json( await _context.Variable.ToListAsync());
-        }
+
+
         public async Task<IActionResult> OverView()
         {
             return View(await _context.Device.ToListAsync());
@@ -46,5 +83,83 @@ namespace BookListMVC.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        //API
+        [HttpGet]
+        public async Task<IActionResult> GetVariables(int? id)
+        {
+            var devicePins = _context.DevicePin;
+            var variables = from v in _context.Variable
+                            join dp in devicePins on v.PinId equals dp.PinId
+                            where dp.PinType == PinType.IN
+                            select v;
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (id == null)
+            {
+                if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
+                {
+                    return Json(variables);
+                }
+                var x = await variables.Where(c => c.CreatedBy == LoginUserId).ToListAsync();
+                return Json(await variables.Where(c => c.CreatedBy == LoginUserId).ToListAsync());
+            }
+            else
+            {
+                if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
+                {
+                    return Json(from v in variables
+                                join dp in devicePins on v.PinId equals dp.PinId
+                                where dp.chipId == id
+                                select v);
+                }
+                return Json(from v in variables
+                            join dp in devicePins on v.PinId equals dp.PinId
+                            where dp.chipId == id && v.CreatedBy == LoginUserId
+                            select v);
+                //return Json( await _context.Variable.ToListAsync());
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetVariableValues(int? id)
+        {
+            if (id == null)
+                return Json(new { });
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var variables = _context.Variable;
+            var variableValues = from v in variables
+                                 join dp in _context.DevicePin on v.PinId equals dp.PinId
+                                 join vv in _context.VariableValue on v.VariableId equals vv.VariableId
+                                 where dp.PinType == PinType.IN && dp.chipId == id
+                                 select vv;
+            var firstItemsInGroup = variableValues.GroupBy(c => c.VariableId)
+                                    .Select(s => new
+                                    {
+                                        VariableValueId = s.Max(c => c.VariableValueId),
+                                        VariableId = s.Key,
+                                    });
+            if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
+            {
+                return Json(from f in firstItemsInGroup
+                            join v in variableValues on f.VariableId equals v.VariableId
+                            where f.VariableValueId == v.VariableValueId
+                            select new
+                            {
+                                Id = v.VariableId,
+                                Value = v.Value
+                            });
+            }
+            return Json(from f in firstItemsInGroup
+                        join vv in variableValues on f.VariableId equals vv.VariableId
+                        join v in variables on vv.VariableId equals v.VariableId
+                        where f.VariableValueId == vv.VariableValueId && v.CreatedBy == LoginUserId
+                        select new
+                        {
+                            Id = vv.VariableId,
+                            Value = vv.Value
+                        });
+
+        }
+
     }
 }

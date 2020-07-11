@@ -1,10 +1,15 @@
 ﻿var model = [];
 var listChart = {};
+var Id;
 window.onload = function () {
-
+    Id = window.location.href.slice(-1);
+    if (isNaN(parseInt(Id))) {
+        Id = "";
+    }
+    console.log(Id);
     $.ajax({
         type: "GET",
-        url: "Home/GetVariables",
+        url: "http://localhost:5005/home/GetVariables/"+Id,
         async: false,
         success: function (data) {
             model = data;
@@ -22,20 +27,31 @@ window.onload = function () {
     }
 }
 function generateData() {
-
-    return [{ Id: 1, Value: Math.random() }, { Id: 2, Value: Math.random() }, { Id: 3, Value: Math.random() }, { Id: 4, Value: Math.random() }]
+    var value;
+    $.ajax({
+        type: "GET",
+        url: "http://localhost:5005/home/GetVariableValues/" + Id,
+        async: false,
+        success: function (data) {
+            value = data;
+        }
+    });
+    return value;
+    //return [{ Id: 1, Value: Math.random() }, { Id: 2, Value: Math.random() }, { Id: 3, Value: Math.random() }, { Id: 4, Value: Math.random() }]
 }
 window.setInterval(function () {
     var values = generateData();
     for (var i = 0; i < values.length; i++) {
-        listChart[values[i].Id].appendData([{
+        listChart[values[i].id].appendData([{
             data: [{
                 x: Date.now(),
-                y: values[i].Value
+                y: values[i].value
             }]
         }], true)
-        listChart[values[i].Id].resetSeries();
+        //listChart[values[i].id].resetSeries();
     }
+
+
     //var values = generateData();
     //for (var i = 0; i < values.length; i++) {
     //    listChart[values[i].Id].updateSeries([{
