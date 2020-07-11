@@ -62,8 +62,8 @@ namespace BookListMVC
                     policy => policy.RequireRole("Admin"));
             });
 
-            services.AddDbContext<SmartWateringContext>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("SmartWateringContext")));
+            //services.AddDbContext<SmartWateringContext>(options =>
+            //        options.UseSqlServer(Configuration.GetConnectionString("ConnectionStrings")));
 
 
         }

@@ -6,9 +6,11 @@
     var ChipIds = Values.Select(c => c.chipId).Distinct().ToList();
 }
 
-<h1>Create</h1>
-
-<h4>Variable</h4>
+    <div class="row">
+        <div class="col-6">
+            <h2 class="h3 mb-2 text-gray-800 text-info">Create variable </h2>
+        </div>
+    </div>
 <hr />
 
 <div class="container-fluid">
@@ -57,7 +59,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-controller="Variables" asp-action="Index">Back to List</a>
 </div>
 <script src="~/js/Load.js"></script>
    
