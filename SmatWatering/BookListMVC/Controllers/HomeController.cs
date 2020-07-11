@@ -42,6 +42,7 @@ namespace BookListMVC.Controllers
                             where dp.PinType == PinType.IN
                             select v;
             var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
             if (id == null)
             {
                 if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
@@ -53,6 +54,7 @@ namespace BookListMVC.Controllers
             }
             else
             {
+                ViewBag.Id = id;
                 if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
                 {
                     return View(from v in variables
@@ -117,19 +119,26 @@ namespace BookListMVC.Controllers
             }
         }
 
-        [HttpGet]
+        //If id != null => select all variable values, else select variable value corresponding with that chipId
+        [HttpGet] 
         public async Task<IActionResult> GetVariableValues(int? id)
         {
-            if (id == null)
-                return Json(new { });
             var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var variables = _context.Variable;
             // Join to filter variable of Input Pin only
             var variableValues = from v in variables
                                  join dp in _context.DevicePin on v.PinId equals dp.PinId
                                  join vv in _context.VariableValue on v.VariableId equals vv.VariableId
+                                 where dp.PinType == PinType.IN 
+                                 select vv;
+            if (id != null)
+            {
+                variableValues = from v in variables
+                                 join dp in _context.DevicePin on v.PinId equals dp.PinId
+                                 join vv in _context.VariableValue on v.VariableId equals vv.VariableId
                                  where dp.PinType == PinType.IN && dp.chipId == id
                                  select vv;
+            }
             //Group by to select the lastest value of each Variable
             var firstItemsInGroup = variableValues.GroupBy(c => c.VariableId)
                                     .Select(s => new
@@ -157,6 +166,46 @@ namespace BookListMVC.Controllers
                         {
                             Id = vv.VariableId,
                             Value = vv.Value
+                        });
+
+        }
+
+        //If id != null => select all variable values, else select variable value corresponding with that chipId
+        [HttpGet]
+        public async Task<IActionResult> GetAllVariableValues(int? id)
+        {
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var variables = _context.Variable;
+            // Join to filter variable of Input Pin only
+            var variableValues = from v in variables
+                                 join dp in _context.DevicePin on v.PinId equals dp.PinId
+                                 join vv in _context.VariableValue on v.VariableId equals vv.VariableId
+                                 where dp.PinType == PinType.IN
+                                 select vv;
+            if (id != null)
+            {
+                variableValues = from v in variables
+                                 join dp in _context.DevicePin on v.PinId equals dp.PinId
+                                 join vv in _context.VariableValue on v.VariableId equals vv.VariableId
+                                 where dp.PinType == PinType.IN && dp.chipId == id
+                                 select vv;
+            }
+            
+            if (!(await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
+            {
+                variableValues = from vv in variableValues
+                                 join v in variables on vv.VariableId equals v.VariableId
+                                 where v.CreatedBy == LoginUserId
+                                 select vv;
+            }
+            return Json(from vv in variableValues
+                        join v in variables on vv.VariableId equals v.VariableId
+                        select new 
+                        { 
+                            Id = vv.VariableValueId,
+                            Name = v.VariableName,
+                            Value = vv.Value,
+                            CreatedDate = vv.CreatedDate
                         });
 
         }
