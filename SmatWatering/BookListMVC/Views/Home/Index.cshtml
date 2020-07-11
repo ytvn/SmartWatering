@@ -3,6 +3,7 @@
     ViewData["Title"] = "Home Page";
 }
 <link rel="stylesheet" href="~/css/realtime-chart.css" />
+<link href="~/css/thingspeak.css" rel="stylesheet" />
 
 <!-- Begin Page Content -->
 <div class="container-fluid">
@@ -21,10 +22,10 @@
                     <div class="row ">
                     @foreach (var item in Model)
                     {
-                        <div class="col-lg-6">
-                            <div class="col-sm-8 col-lg-12">
-                                <div class="card shadow h-100 py-2 "id="border-@item.VariableId" >
-                                    <div class="card-body">
+                        <div class="col-lg-6 ">
+                            <div class="col-sm-8 col-lg-12 ">
+                                <div class="card shadow h-100 py-2  "id="border-@item.VariableId" >
+                                    <div class="card-body " id="bborder-@item.VariableId"  >
                                         <div class="row no-gutters align-items-center">
                                             <div class="col mr-2">
                                                 <div class="text-xs font-weight-bold text-uppercase mb-1 "id="text-@item.VariableId">Average Moisture</div>
@@ -35,11 +36,12 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="card-body">
+                                        <div class="col-sm-8 col-lg-12 chart-bg panel panel-primary" id='chart-@item.VariableId'></div>
+                                    </div>
                                 </div>
                             </div>
                             <div></div>
-                            <div class="col-sm-8 col-lg-12 chart-bg" id='chart-@item.VariableId'></div>
-                            <br />
                             <br />
                         </div>
                     }

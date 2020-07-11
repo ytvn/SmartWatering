@@ -3,81 +3,85 @@
 @{ ViewData["Title"] = "Index"; }
 
 <!-- Begin Page Content -->
-<div class="container-fluid">
+    <div class="container-fluid">
 
-    <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800 text-info">Variables</h1>
-
-    <p class="mb-4">
-        <a asp-action="Create">Create New</a>
-    </p>
-
-    <!-- DataTales Example -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">DataTables</h6>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>
-                                @Html.DisplayNameFor(model => model.VariableName)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.VariableId)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.PIN)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.ChipId)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.CreatedDate)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.UpdatedDate)
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                        <tr>
-                            <td>
-                                <a asp-controller="VariableValues" asp-action="Details" asp-route-id="@item.VariableId"> @Html.DisplayFor(modelItem => item.VariableName)</a>
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.VariableId)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.PIN)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.ChipId)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.CreatedDate)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.UpdatedDate)
-                            </td>
-                            <td>
-                                <a asp-action="Edit" asp-route-id="@item.VariableId"><i style="margin-right : 5px" class="text-info fas fa-pen fa-lg"></i></a> |
-                                <a onclick='Delete("/Variables/Delete/@item.VariableId" ,false)'><i style="margin-left : 5px" class="text-danger fas fa-trash fa-lg"></i></a>
-                            </td>
-                        </tr>
-}
-
-                    </tbody>
-                </table>
+        <!-- Page Heading -->
+        
+        <div class="row">
+            <div class="col-6">
+                <h2 class="h3 mb-2 text-gray-800 text-info">Variables </h2>
+            </div>
+            <div class="col-6 text-right">
+                <a class="btn btn-primary text-white"  asp-action="Create"><i class="fas fa-plus"></i> &nbsp; Create New Variables </a>
             </div>
         </div>
-    </div>
 
-</div>
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">DataTables</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.VariableName)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.VariableId)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.PIN)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.ChipId)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.CreatedDate)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.UpdatedDate)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-controller="VariableValues" asp-action="Details" asp-route-id="@item.VariableId"> @Html.DisplayFor(modelItem => item.VariableName)</a>
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.VariableId)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.PIN)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ChipId)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.CreatedDate)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.UpdatedDate)
+                                    </td>
+                                    <td>
+                                        <a asp-action="Edit" asp-route-id="@item.VariableId"><i style="margin-right : 5px" class="text-info fas fa-pen fa-lg"></i></a> |
+                                        <a onclick='Delete("/Variables/Delete/@item.VariableId" ,false)'><i style="margin-left : 5px" class="text-danger fas fa-trash fa-lg"></i></a>
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
 @section Scripts{
     <script src="~/js/toatr.js"></script>
     <script src="~/js/demo/datatables-demo.js"></script>

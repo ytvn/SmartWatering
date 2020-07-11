@@ -66,11 +66,11 @@
             <div class="sidebar-heading">
                 Interface
             </div>
-            <!-- Nav Item - Statistics -->
+            <!-- Nav Item - OverView -->
             <li class="nav-item">
-                <a class="nav-link" asp-controller="VariableValues" asp-action="Index">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Statistics</span>
+                <a class="nav-link" asp-controller="Home" asp-action="OverView">
+                    <i class="fas fa-fw fa-wrench"></i>
+                    <span>OverView  </span>
                 </a>
             </li>
             <!-- Nav Item - Schedule -->
@@ -94,23 +94,39 @@
                     <span>Control</span>
                 </a>
             </li>
-            <!-- Nav Item - Control -->
+            <!-- Nav Item - Devices -->
             <li class="nav-item">
                 <a class="nav-link" asp-controller="Devices" asp-action="Index">
                     <i class="fas fa-fw fa-wrench"></i>
-                    <span>Settings</span>
+                    <span>Devices</span>
                 </a>
             </li>
-            <!-- Nav Item - OverView -->
+
+            <!-- Nav Item - Device Pins -->
             <li class="nav-item">
-                <a class="nav-link" asp-controller="Home" asp-action="OverView">
+                <a class="nav-link" asp-controller="DevicePins" asp-action="Index">
                     <i class="fas fa-fw fa-wrench"></i>
-                    <span>OverView  </span>
+                    <span>Device Pins</span>
                 </a>
             </li>
+            <!-- Nav Item - Variables -->
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Variables" asp-action="Index">
+                    <i class="fas fa-fw fa-wrench"></i>
+                    <span>Variables</span>
+                </a>
+            </li>
+            <!-- Nav Item - Variables Value -->
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="VariableValues" asp-action="Index">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Variable Values</span>
+                </a>
+            </li>
+
             @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
             {
-                     @*<div> @signInManager.UserManager.GetUserId User.Identity.Name;</div>*@
+                @*<div> @signInManager.UserManager.GetUserId User.Identity.Name;</div>*@
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
                         <i class="fas fa-lock"></i>

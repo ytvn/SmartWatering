@@ -17,6 +17,7 @@ window.onload = function () {
         //document.getElementById("border-" + model[i].variableId).style.border = "thick solid " + chartColors[i % 7]
         //document.getElementById("border-" + model[i].variableId).style.borderTop = "thick solid " + chartColors[i % 7]
         document.getElementById("border-" + model[i].variableId).style.borderLeft = "thick solid " + chartColors[i % 7]
+        //document.getElementById("bborder-" + model[i].variableId).style.borderBottom = "thick solid " + chartColors[i % 7]
         document.getElementById("text-" + model[i].variableId).style.webkitTextFillColor = chartColors[i % 7]
         
     }
@@ -59,7 +60,7 @@ function newSeries(name, color) {
     return {
         chart: {
             id: 'realtime',
-            type: 'area',
+            type: 'line',
             height: 350,
             width: "100%",
             animations: {
@@ -98,10 +99,13 @@ function newSeries(name, color) {
         }],
         colors: color,
         stroke: {
-            curve: 'smooth'
+            curve: 'smooth',
+            width: 2,
         },
         yaxis: {
             type: 'linear',
+            min: 0,
+            max:1,
             labels: {
                 formatter: function (val) {
                     return (val).toFixed(2);
@@ -113,7 +117,7 @@ function newSeries(name, color) {
         },
         xaxis: {
             type: 'datetime',
-            range: 4000,
+            range: 10000,
             categories: [],
             tickPlacement: 'on',
             labels: {
