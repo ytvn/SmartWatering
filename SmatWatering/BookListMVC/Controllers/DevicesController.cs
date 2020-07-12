@@ -31,10 +31,17 @@ namespace SmartWatering.Controllers
             this.userManager = userManager;
             this.authorizationService = authorizationService;
         }
-        public IActionResult GetInfo()
+        public async Task<IActionResult> GetInfo()
         {
-            var val = _context.Device.Select(x => new { x.Description, x.ChipId });
-            return new JsonResult(val);
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var val = _context.Device.Select(x => new { x.Name, x.ChipId });
+
+            if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
+            {
+                return new JsonResult(_context.Device.Select(x => new { x.Name, x.ChipId }));
+            }
+            return new JsonResult( _context.Device.Where(c => c.CreatedBy == LoginUserId)
+                                                    .Select(x => new { x.Name, x.ChipId }));
         }
         // GET: Devices
        

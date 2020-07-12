@@ -23,7 +23,7 @@ function getDevice() {
     });
 
     val.forEach(e => {
-        $("#Device").append("<option value=" + e.chipId + ">" + e.description + "</option>");
+        $("#Device").append("<option value=" + e.chipId + ">" + e.name + "</option>");
     });
     getPin(val[0].chipId);
 

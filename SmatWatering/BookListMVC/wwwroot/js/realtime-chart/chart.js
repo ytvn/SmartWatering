@@ -79,7 +79,7 @@ function newSeries(name, color) {
             height: 350,
             width: "100%",
             animations: {
-                enabled: true,
+                enabled: false,
                 easing: 'linear',
                 dynamicAnimation: {
                     speed: 1000
@@ -103,7 +103,7 @@ function newSeries(name, color) {
             }
         },
         dataLabels: {
-            enabled: false,
+            enabled: true,
         },
         markers: {
             size: 1
@@ -120,7 +120,7 @@ function newSeries(name, color) {
         yaxis: {
             type: 'linear',
             min: 0,
-            max :100,
+            max: 100,
             labels: {
                 formatter: function (val) {
                     return (val).toFixed(2);
@@ -164,10 +164,11 @@ function average(type, chipId, variableId) {
     document.getElementById("text-" + variableId).innerHTML = "Average " + name + " of " + dwm[type - 1];
     GetAverage(type, chipId, variableId);
 }
-
+var interval=[];
 function GetAverage(type, deviceId, variableId) {
     var value;
-    setInterval(function () {
+    clearInterval(interval[variableId.toString()]);
+    interval[variableId.toString()] = setInterval(function () {
         $.ajax({
             type: "GET",
             url: domain + "/home/average/?type=" + type + "&deviceId=" + deviceId + "&variableId=" + variableId,
@@ -177,7 +178,7 @@ function GetAverage(type, deviceId, variableId) {
             }
         });
         console.log(value);
-        if(value!=-1)
+        if (value != -1)
             document.getElementById("avg-" + variableId).innerHTML = value;
     }, 3000);
 

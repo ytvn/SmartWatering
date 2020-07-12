@@ -28,10 +28,18 @@ namespace SmartWatering.Controllers
         }
 
         [HttpGet]
-        public  IActionResult GetInfo(int _chipId)
+        public async  Task<IActionResult> GetInfo(int _chipId)
         {
-            var val = _context.DevicePin.Where(x => x.chipId == _chipId).Select(x => new { value = x.PIN +": "+x.Description, x.PIN });
-            return new JsonResult(val);
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
+            {
+                return new JsonResult(_context.DevicePin
+                            .Where(x => x.chipId == _chipId && x.PinType == Util.PinType.OUT)
+                            .Select(x => new { value = x.PIN + ": " + x.Description, x.PIN }));
+            }
+            return new JsonResult(_context.DevicePin
+                         .Where(x => x.chipId == _chipId && x.CreatedBy==LoginUserId && x.PinType == Util.PinType.OUT)
+                         .Select(x => new { value = x.PIN + ": " + x.Description, x.PIN }));
         }
 
         // GET: DevicePins
