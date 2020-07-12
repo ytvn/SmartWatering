@@ -12,6 +12,8 @@ using SmartWatering.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using SmartWatering.Util;
+using OfficeOpenXml;
+using Microsoft.AspNetCore.Http;
 
 namespace BookListMVC.Controllers
 {
@@ -207,6 +209,68 @@ namespace BookListMVC.Controllers
                             Value = vv.Value,
                             CreatedDate = vv.CreatedDate
                         });
+
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> ExportAllVariableValues(int? id)
+        {
+            int i = 2;
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            ExcelPackage pck = new ExcelPackage();
+            ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Report");
+
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var variables = _context.Variable;
+            // Join to filter variable of Input Pin only
+            var variableValues = from v in variables
+                                 join dp in _context.DevicePin on v.PinId equals dp.PinId
+                                 join vv in _context.VariableValue on v.VariableId equals vv.VariableId
+                                 where dp.PinType == PinType.IN
+                                 select vv;
+            if (id != null)
+            {
+                variableValues = from v in variables
+                                 join dp in _context.DevicePin on v.PinId equals dp.PinId
+                                 join vv in _context.VariableValue on v.VariableId equals vv.VariableId
+                                 where dp.PinType == PinType.IN && dp.chipId == id
+                                 select vv;
+            }
+            
+            if (!(await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
+            {
+                variableValues = from vv in variableValues
+                                 join v in variables on vv.VariableId equals v.VariableId
+                                 where v.CreatedBy == LoginUserId
+                                 select vv;
+            }
+            ws.Cells["A1"].Value = "ID";
+            ws.Cells["B1"].Value = "Name";
+            ws.Cells["C1"].Value = "Value";
+            ws.Cells["D1"].Value = "CreatedDate";
+            var result = (from vv in variableValues
+                          join v in variables on vv.VariableId equals v.VariableId
+                          select new
+                          {
+                              Id = vv.VariableValueId,
+                              Name = v.VariableName,
+                              Value = vv.Value,
+                              CreatedDate = vv.CreatedDate
+                          }).ToList();
+            foreach (var item in result)
+            {
+                ws.Cells[string.Format("A{0}", i)].Value = item.Id;
+                ws.Cells[string.Format("B{0}", i)].Value = item.Name;
+                ws.Cells[string.Format("C{0}", i)].Value = item.Value;
+                ws.Cells[string.Format("D{0}", i)].Value = item.CreatedDate;
+                i++;
+            }
+            ws.Cells["A:AZ"].AutoFitColumns();
+            Response.Clear();
+            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            Response.Headers.Add("content-disposition", "attachment: filename=" + "ExcelReport.xlsx");
+            await Response.Body.WriteAsync(pck.GetAsByteArray());
+            return Json(result);
 
         }
         //http://localhost:5005/home/average/?type=2&deviceId=3&variableId=22
