@@ -11,6 +11,7 @@ namespace BookListMVC.Models
     {
         [Key]
         public int DeviceId { get; set; }
+        public string Name { get; set; }
         [Display(Name = "Chip ID")]
         public int ChipId { get; set; }
         public string Description { get; set; }
