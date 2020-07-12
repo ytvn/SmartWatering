@@ -11,6 +11,7 @@ function getDeviceId() {
     }
 }
 window.onload = function () {
+    getDeviceId();
     $.ajax({
         type: "GET",
         url: domain + "/home/GetVariables/" + Id,
@@ -28,7 +29,7 @@ window.onload = function () {
         //document.getElementById("border-" + model[i].variableId).style.borderTop = "thick solid " + chartColors[i % 7]
         document.getElementById("border-" + model[i].variableId).style.borderLeft = "thick solid " + chartColors[i % 7]
         document.getElementById("text-" + model[i].variableId).style.webkitTextFillColor = chartColors[i % 7]
-
+        average(1, Id, model[i].variableId);
     }
 }
 function GetVariableValues() {
@@ -175,8 +176,10 @@ function GetAverage(type, deviceId, variableId) {
                 value = data.average;
             }
         });
-        document.getElementById("avg-" + variableId).innerHTML = value;
-    }, 5000);
+        console.log(value);
+        if(value!=-1)
+            document.getElementById("avg-" + variableId).innerHTML = value;
+    }, 3000);
 
     //Ex {"variableId":22,"average":41.91}
 }

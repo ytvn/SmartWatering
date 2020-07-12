@@ -240,10 +240,13 @@ namespace BookListMVC.Controllers
             else if (type == 3)
                 variableValues = variableValues.Where(c => DateTime.Now.Month == c.CreatedDate.Month);
 
-
-            return new JsonResult((variableValues
+            var result = (variableValues
                                 .GroupBy(x => x.VariableId)
-                                .Select(y => new { VariableId = y.Key, Average = Math.Round(y.Average(x => x.Value), 2) })).FirstOrDefault());
+                                .Select(y => new { VariableId = y.Key, Average = Math.Round(y.Average(x => x.Value), 2) }))
+                                .FirstOrDefault();
+            if (result == null)
+                return Json(new { VariableId=-1, Average=-1 });
+            return new JsonResult(result );
         }
         private bool IsInWeek(int day)
         {

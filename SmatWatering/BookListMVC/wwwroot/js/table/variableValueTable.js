@@ -3,7 +3,7 @@ var count;
 $(document).ready(function () {
     loadDataTable();
     count = 0;
-    //realTime();
+    realTime();
 });
 
 function realTime() {
