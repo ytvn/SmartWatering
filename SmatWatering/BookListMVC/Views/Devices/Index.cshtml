@@ -33,10 +33,13 @@
                                 @Html.DisplayNameFor(model => model.Description)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.CreatedDate)
+                                @Html.DisplayNameFor(model => model.ReadAPIKey)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.UpdatedDate)
+                                @Html.DisplayNameFor(model => model.WriteAPIKey)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.CreatedDate)
                             </th>
                             <th></th>
                         </tr>
@@ -55,13 +58,17 @@
                                     @Html.DisplayFor(modelItem => item.Description)
                                 </td>
                                 <td>
+                                    @Html.DisplayFor(modelItem => item.ReadAPIKey)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.WriteAPIKey)
+                                </td>
+                                <td>
                                     @Html.DisplayFor(modelItem => item.CreatedDate)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.UpdatedDate)
-                                </td>
-                                <td>
                                     <a asp-action="Edit" asp-route-id="@item.DeviceId"><i style="margin-right : 5px" class="text-info fas fa-pen fa-lg"></i> </a> |
+                                    <a asp-action="Details" asp-route-id="@item.DeviceId"><i style="margin-right : 5px" class="text-warning fas fa-info-circle fa-lg"></i> </a> |
                                     <a onclick='Delete("/Devices/Delete/@item.DeviceId" ,false)'> <i style="margin-left : 5px" class="text-danger fas fa-trash fa-lg"></i></a>
                                 </td>
                             </tr>

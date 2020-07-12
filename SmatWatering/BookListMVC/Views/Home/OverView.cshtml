@@ -20,19 +20,15 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading ellipsis">
-                        <a asp-controller="DevicePins" asp-action="Index" asp-route-id="@item.ChipId"> <i class="fa fa-chart-bar"></i>    </a>
+                        <a asp-controller="Home" asp-action="Index" asp-route-id="@item.ChipId"> <i class="fa fa-chart-bar"></i>    </a>
 
 
-                        <a asp-controller="DevicePins" asp-action="Index" asp-route-id="@item.ChipId"> @Html.DisplayFor(modelItem => item.ChipId)</a>
+                        <a asp-controller="Home" asp-action="Index" asp-route-id="@item.ChipId"> @Html.DisplayFor(modelItem => item.Name)</a>
                     </div>
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-sm-6 col-xs-6">Chip Id:</div>
                             <div class="col-sm-6 col-xs-6"><b>@item.ChipId</b></div>
-                        </div>
-                        <div class="row ">
-                            <div class="col-sm-6 col-xs-6">Description:</div>
-                            <div class="col-sm-6 col-xs-6"><b>@item.Description</b></div>
                         </div>
                         <div class="row">
                             <div class="col-sm-6 col-xs-6">ReadAPIKey:</div>
@@ -41,6 +37,10 @@
                         <div class="row">
                             <div class="col-sm-6 col-xs-6">WriteAPIKey:</div>
                             <div class="col-sm-6 col-xs-6"><b>@item.WriteAPIKey</b></div>
+                        </div>
+                        <div class="row ">
+                            <div class="col-sm-6 col-xs-6">Description:</div>
+                            <div class="col-sm-6 col-xs-6"><b>@item.Description</b></div>
                         </div>
                     </div>
                 </div>

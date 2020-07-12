@@ -118,12 +118,33 @@ namespace SmartWatering.Controllers
             return View(device);
         }
 
+        // GET: Devices/Edit/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return View("NotFound");
+            }
+
+            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var device = await _context.Device.FindAsync(id);
+
+            if (device == null)
+            {
+                return View("NotFound");
+            }
+            if (device.CreatedBy != LoginUserId && !(await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
+            {
+                return View("AccessDenied");
+            }
+            return View(device);
+        }
+
         // POST: Devices/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DeviceId, Name, ChipId,Description")] Device device)
+        public IActionResult Edit(int id, [Bind("DeviceId, Name, ChipId,Description, CreatedBy, WriteAPIKey, ReadAPIKey")] Device device)
         {
             var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id != device.DeviceId)
@@ -137,7 +158,7 @@ namespace SmartWatering.Controllers
                 {
                     device.UpdatedBy = LoginUserId;
                     _context.Update(device);
-                    await _context.SaveChangesAsync();
+                    _context.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -154,6 +175,7 @@ namespace SmartWatering.Controllers
             }
             return View(device);
         }
+
 
         [HttpDelete]
         public async Task<IActionResult> Delete(int id)
