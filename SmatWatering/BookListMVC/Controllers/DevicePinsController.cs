@@ -28,18 +28,19 @@ namespace SmartWatering.Controllers
         }
 
         [HttpGet]
-        public async  Task<IActionResult> GetInfo(int _chipId)
+        public async  Task<IActionResult> GetInfo(int _chipId, int type)//type=0 In/ 1=out
         {
             var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
             {
                 return new JsonResult(_context.DevicePin
-                            .Where(x => x.chipId == _chipId && x.PinType == Util.PinType.OUT)
+                            .Where(x => x.chipId == _chipId && x.PinType == (Util.PinType)type)
                             .Select(x => new { value = x.PIN + ": " + x.Description, x.PIN }));
             }
-            return new JsonResult(_context.DevicePin
-                         .Where(x => x.chipId == _chipId && x.CreatedBy==LoginUserId && x.PinType == Util.PinType.OUT)
-                         .Select(x => new { value = x.PIN + ": " + x.Description, x.PIN }));
+            var x = _context.DevicePin
+                         .Where(x => x.chipId == _chipId && x.CreatedBy == LoginUserId && x.PinType == (Util.PinType)type)
+                         .Select(x => new { value = x.PIN + ": " + x.Description, x.PIN });
+            return new JsonResult(x);
         }
 
         // GET: DevicePins
@@ -130,10 +131,9 @@ namespace SmartWatering.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("PinId, PinType, PIN,chipId,Description,CreatedDate,UpdatedDate")] DevicePin devicePin)
+        public IActionResult Edit(int id, [Bind("PinId, CreatedBy, PinType, PIN,chipId,Description,CreatedDate,UpdatedDate")] DevicePin devicePin)
         {
             var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (id != devicePin.PinId)
             {
                 return View("NotFound");

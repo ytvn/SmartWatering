@@ -114,6 +114,7 @@ namespace SmartWatering.Controllers
                                VariableName = v.VariableName,
                                PIN = d.PIN,
                                ChipId = d.chipId,
+                               PinId = v.PinId,
                                CreatedDate = v.CreatedDate,
                                UpdatedDate = v.UpdatedDate,
                                CreatedBy = v.CreatedBy
@@ -135,7 +136,7 @@ namespace SmartWatering.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("VariableId,VariableName,PinId,CreatedDate,UpdatedDate")] Variable variable)
+        public IActionResult Edit(int id, [Bind("VariableId,VariableName,PinId,CreatedDate,UpdatedDate, CreatedBy")] Variable variable)
         {
             var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id != variable.VariableId)
@@ -149,7 +150,7 @@ namespace SmartWatering.Controllers
                 {
                     variable.UpdatedBy = LoginUserId;
                     _context.Update(variable);
-                    await _context.SaveChangesAsync();
+                     _context.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException)
                 {

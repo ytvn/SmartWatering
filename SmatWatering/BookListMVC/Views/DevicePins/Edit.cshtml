@@ -21,6 +21,7 @@
                         <form asp-action="Edit" class="col-12 justify-content-center">
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                             <input type="hidden" asp-for="PinId" />
+                            <input type="hidden" asp-for="CreatedBy" />
 
                             <div class="form-group row justify-content-center">
                                 <label asp-for="PinType" class="control-label col-4"></label>

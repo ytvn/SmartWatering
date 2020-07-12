@@ -1,9 +1,10 @@
-﻿function Load() {
+﻿
+function Load() {
     var chipId = document.getElementById("ChipId").value;
     var val;
     $.ajax({
         type: "GET",
-        url: "/DevicePins/GetInfo?_chipId=" + chipId,
+        url: "/DevicePins/GetInfo?_chipId=" + chipId +"&type=0",
         async: false,
         success: function (data) {
             val = data;

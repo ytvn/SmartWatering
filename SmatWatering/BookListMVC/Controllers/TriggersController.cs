@@ -66,7 +66,7 @@ namespace SmartWatering.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,VariableId,Description,min,max,Interval,Duration")] Trigger trigger)
+        public IActionResult Create([Bind("Id,VariableId,Description,min,max,Interval,Duration")] Trigger trigger)
         {
             if (ModelState.IsValid)
             {
@@ -89,7 +89,7 @@ namespace SmartWatering.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Control([Bind("Device, Status, PIN")] Control control)
+        public IActionResult Control([Bind("Device, Status, PIN")] Control control)
         {
             if (ModelState.IsValid)
             {
