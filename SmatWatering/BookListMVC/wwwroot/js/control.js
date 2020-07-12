@@ -18,7 +18,7 @@ function getDevice() {
     });
 
     val.forEach(e => {
-        $("#Device").append("<option value=" + e.chipId + ">" + e.description + "</option>");
+        $("#Device").append("<option value=" + e.chipId + ">" + e.name + "</option>");
     });
     getPin(val[0].chipId);
 
@@ -27,7 +27,7 @@ function getPin(chipId) {
     var val;
     $.ajax({
         type: "GET",
-        url: "http://localhost:5005/DevicePins/GetInfo?_chipId=" + chipId,
+        url: "http://localhost:5005/DevicePins/GetInfo?_chipId=" + chipId + "&type=1",
         async: false,
         success: function (data) {
             val = data;
