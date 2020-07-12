@@ -54,7 +54,7 @@ namespace BookListMVC.Controllers
             }
             else
             {
-                ViewBag.Id = id;
+                ViewBag.chipId = id;
                 if ((await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
                 {
                     return View(from v in variables
@@ -209,21 +209,21 @@ namespace BookListMVC.Controllers
                         });
 
         }
-        //http://localhost:5005/home/average/?type=1&id=3
+        //http://localhost:5005/home/average/?type=2&deviceId=3&variableId=22
         [HttpGet]
-        public async Task<IActionResult> Average(int type, int? id)
+        public async Task<IActionResult> Average(int type, int? deviceId, int variableId)
         {
-            if (id == null)
+            if (deviceId == null)
                 return Json(new { });
 
             var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var variables = await _context.Variable.ToListAsync();
+            var variables = await _context.Variable.Where(c => c.VariableId == variableId).ToListAsync();
 
             // Join to filter variable of Input Pin only and value only for 1 device
             var variableValues = from v in variables
                                  join dp in _context.DevicePin on v.PinId equals dp.PinId
                                  join vv in _context.VariableValue on v.VariableId equals vv.VariableId
-                                 where dp.PinType == PinType.IN && dp.chipId == id
+                                 where dp.PinType == PinType.IN && dp.chipId == deviceId
                                  select vv;
             if (!(await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
             {
@@ -241,15 +241,15 @@ namespace BookListMVC.Controllers
                 variableValues = variableValues.Where(c => DateTime.Now.Month == c.CreatedDate.Month);
 
 
-            return new JsonResult(variableValues
+            return new JsonResult((variableValues
                                 .GroupBy(x => x.VariableId)
-                                .Select(y => new { VariableId = y.Key, Average = Math.Round(y.Average(x => x.Value), 2) }));
+                                .Select(y => new { VariableId = y.Key, Average = Math.Round(y.Average(x => x.Value), 2) })).FirstOrDefault());
         }
         private bool IsInWeek(int day)
         {
-            var now = (int)DateTime.Now.DayOfWeek;
-            var begin = DateTime.Now.Day - now;
-            var end = DateTime.Now.Day + (7 - now);
+            var now = ((int)DateTime.Now.DayOfWeek + 6) % 7 +1;
+            var begin = DateTime.Now.Day - (now -1);
+            var end = DateTime.Now.Day +(7-now);
             if (day >= begin && day <= end)
                 return true;
             return false;

@@ -1,10 +1,11 @@
 ﻿@model IEnumerable<BookListMVC.Models.Variable>
 @{
     ViewData["Title"] = "Home Page";
-    var Id = ViewBag.Id;
+    var ChipID = ViewBag.chipId;
 }
 <link rel="stylesheet" href="~/css/realtime-chart.css" />
 <link href="~/css/thingspeak.css" rel="stylesheet" />
+
 
 <!-- Begin Page Content -->
 <div class="container-fluid">
@@ -16,47 +17,77 @@
     </div>
 
     <!-- Content Row -->
-
-
+    @*<div class="dropdown">
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                Tutorials
+                <span class="caret"></span>
+            </button>
+            <a class="dropdown-toggle no-arrow"  data-toggle="dropdown"> <i class="fas fa-tint fa-2x text-gray-300"></i></a>
+            <ul class="dropdown-menu">
+                <li><a class="h3 mb-0 text-gray-800" href="#">HTML</a></li>
+                <li><a href="#">CSS</a></li>
+                <li><a href="#">JavaScript</a></li>
+                <li class="divider"></li>
+                <li><a href="#">About Us</a></li>
+            </ul>
+        </div>*@
     
+
     <div class="container">
-                    <div class="row ">
-                    @foreach (var item in Model)
-                    {
-                        <div class="col-lg-6 ">
-                            <div class="col-sm-8 col-lg-12 ">
-                                <div class="card shadow h-100 py-2  "id="border-@item.VariableId" >
-                                    <div class="card-body " id="bborder-@item.VariableId"  >
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-uppercase mb-1 "id="text-@item.VariableId">Average Moisture</div>
-                                                <div id="avg-moi" class="h5 mb-0 font-weight-bold text-gray-800"></div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <i class="fas fa-tint fa-2x text-gray-300"></i>
+        <div class="row ">
+            @foreach (var item in Model)
+            {
+                <div class="col-lg-6 ">
+                    <div class="col-sm-8 col-lg-12 ">
+                        <div class="card shadow h-100 py-2  " id="border-@item.VariableId">
+                            <div class="card-body mb-0 pb-0" id="bborder-@item.VariableId">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2 ">
+                                        <div class="col-auto h6 text-xs font-weight-bold text-uppercase  p-0" id="text-@item.VariableId">Average Moisture of Month</div>
+                                        <div class="col-auto h5 mb-0 font-weight-bold text-dark p-2" id="avg-@item.VariableId">250</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="nav-item dropdown no-arrow">
+                                            <a class="nav-link dropdown-toggle" href="#" id="averageDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v text-black-50"></i>
+                                            </a>
+                                            <!-- Dropdown - User Information -->
+                                            <div class="dropdown-menu shadow " aria-labelledby="averageDropdown">
+                                                <a class="dropdown-item" onclick="average(1, @ChipID, '@item.VariableId')">
+                                                    <i class="fas fa-calendar-day fa-sm fa-fw mr-2 text-gray-700"></i>
+                                                    Average by date
+                                                </a>
+                                                <a class="dropdown-item" onclick="average(2, @ChipID, '@item.VariableId')">
+                                                    <i class="fas fa-calendar-day fa-sm fa-fw mr-2 text-gray-700"></i>
+                                                    Average by week
+                                                </a>
+                                                <a class="dropdown-item" onclick="average(3, @ChipID, '@item.VariableId')">
+                                                    <i class="fas fa-calendar-day fa-sm fa-fw mr-2 text-gray-700"></i>
+                                                    Average by month
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card-body">
-                                        <div class="col-sm-8 col-lg-12 chart-bg panel panel-primary" id='chart-@item.VariableId'></div>
-                                    </div>
                                 </div>
                             </div>
-                            <div></div>
-                            <br />
+                            <div class="card-body mt-0 pt-0 pb-1 ">
+                                <div class="col-sm-8 col-lg-12 chart-bg panel panel-primary" id='chart-@item.VariableId'></div>
+                            </div>
                         </div>
-                    }
                     </div>
-
+                    <div></div>
+                    <br />
+                </div>
+            }
         </div>
+
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.6.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-@*<script src="~/js/realtime-chart/chartjs-plugin-streaming.js"></script>*@
-@*<script src="~/js/realtime-chart/realtime-chart.js"></script>*@
+
 <script src="~/js/realtime-chart/chart.js"></script>
-@*<script src="~/js/realtime-chart/ntuan.js"></script>*@
-@*<script src="~/js/dashboard.js"></script>*@
+

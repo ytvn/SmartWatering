@@ -2,12 +2,15 @@
 var listChart = {};
 var Id;
 var domain = "http://localhost:5005";
-window.onload = function () {
-    Id = window.location.href.slice(-1);
+
+function getDeviceId() {
+    Id = window.location.href.split('/');
+    Id = Id[Id.length - 1];
     if (isNaN(parseInt(Id))) {
         Id = "";
     }
-    console.log(Id);
+}
+window.onload = function () {
     $.ajax({
         type: "GET",
         url: domain + "/home/GetVariables/" + Id,
@@ -16,6 +19,7 @@ window.onload = function () {
             model = data;
         }
     });
+
     for (var i = 0; i < model.length; i++) {
 
         listChart[model[i].variableId] = new ApexCharts(document.querySelector("#chart-" + model[i].variableId), newSeries(model[i].variableName, chartColors[i % 7]))
@@ -27,7 +31,7 @@ window.onload = function () {
 
     }
 }
-function generateData() {
+function GetVariableValues() {
     var value;
     $.ajax({
         type: "GET",
@@ -38,10 +42,11 @@ function generateData() {
         }
     });
     return value;
-    //return [{ Id: 1, Value: Math.random() }, { Id: 2, Value: Math.random() }, { Id: 3, Value: Math.random() }, { Id: 4, Value: Math.random() }]
+    //Ex [{ Id: 1, Value: Math.random() }, { Id: 2, Value: Math.random() }, { Id: 3, Value: Math.random() }, { Id: 4, Value: Math.random() }]
 }
+
 window.setInterval(function () {
-    var values = generateData();
+    var values = GetVariableValues();
     for (var i = 0; i < values.length; i++) {
         listChart[values[i].id].appendData([{
             data: [{
@@ -51,15 +56,8 @@ window.setInterval(function () {
         }], true)
         //listChart[values[i].id].resetSeries();
     }
-
-
-    //var values = generateData();
-    //for (var i = 0; i < values.length; i++) {
-    //    listChart[values[i].Id].updateSeries([{
-    //        data: values[i].Value
-    //    }])
-    //}
 }, 1000);
+
 var xlabels = [];
 var ylabels = [];
 var data = [];
@@ -154,7 +152,32 @@ function newSeries(name, color) {
     };
 }
 
+function average(type, chipId, variableId) {
+    var dwm = ["Day", "Week", "Month"];
 
+    var name = "";
+    model.forEach(e => {
+        if (e.variableId == variableId)
+            name = e.variableName;
+    });
+    document.getElementById("text-" + variableId).innerHTML = "Average " + name + " of " + dwm[type - 1];
+    GetAverage(type, chipId, variableId);
+}
 
+function GetAverage(type, deviceId, variableId) {
+    var value;
+    setInterval(function () {
+        $.ajax({
+            type: "GET",
+            url: domain + "/home/average/?type=" + type + "&deviceId=" + deviceId + "&variableId=" + variableId,
+            async: false,
+            success: function (data) {
+                value = data.average;
+            }
+        });
+        document.getElementById("avg-" + variableId).innerHTML = value;
+    }, 5000);
 
+    //Ex {"variableId":22,"average":41.91}
+}
 
