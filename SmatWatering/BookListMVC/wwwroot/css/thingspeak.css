@@ -7,7 +7,6 @@ div {
     display: block;
 }
 .public_channel_description {
-    height: 140px;
     overflow: hidden;
 }
 p {

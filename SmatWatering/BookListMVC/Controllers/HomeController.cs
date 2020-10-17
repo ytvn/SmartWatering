@@ -219,7 +219,10 @@ namespace BookListMVC.Controllers
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             ExcelPackage pck = new ExcelPackage();
             ExcelWorksheet ws = pck.Workbook.Worksheets.Add("Report");
-
+            ws.Cells["A1"].Value = "ID";
+            ws.Cells["B1"].Value = "Name";
+            ws.Cells["C1"].Value = "Value";
+            ws.Cells["D1"].Value = "Created Date";
             var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var variables = _context.Variable;
             // Join to filter variable of Input Pin only
@@ -244,10 +247,7 @@ namespace BookListMVC.Controllers
                                  where v.CreatedBy == LoginUserId
                                  select vv;
             }
-            ws.Cells["A1"].Value = "ID";
-            ws.Cells["B1"].Value = "Name";
-            ws.Cells["C1"].Value = "Value";
-            ws.Cells["D1"].Value = "CreatedDate";
+           
             var result = (from vv in variableValues
                           join v in variables on vv.VariableId equals v.VariableId
                           select new
@@ -269,7 +269,7 @@ namespace BookListMVC.Controllers
             Response.Clear();
             Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
             Response.Headers.Add("content-disposition", "attachment: filename=" + "ExcelReport.xlsx");
-            await Response.Body.WriteAsync(pck.GetAsByteArray());
+            Response.Body.WriteAsync(pck.GetAsByteArray());
             return Json(result);
 
         }
