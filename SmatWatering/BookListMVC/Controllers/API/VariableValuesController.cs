@@ -114,8 +114,8 @@ namespace SmartWatering.Controllers.API
                                    join dp in _context.DevicePin on v.PinId equals dp.PinId
                                    join d in _context.Device on dp.chipId equals d.ChipId
                                    select d.WriteAPIKey).SingleOrDefaultAsync();
-            if (Token != WriteToken)
-                return StatusCode(403);
+            //if (Token != WriteToken)
+            //    return StatusCode(403);
             var variableValue = new VariableValue();
             variableValue.VariableId = ID;
             variableValue.Value = Value;
