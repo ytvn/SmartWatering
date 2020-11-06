@@ -106,15 +106,15 @@ namespace SmartWatering.Controllers.API
         [HttpPost("thethingsnetwork")]
         public async Task<ActionResult<VariableValue>> ForwardVariableValue(VariableValue value)
         {
-            var Token = this.Request.Headers.FirstOrDefault(c => c.Key == "Token").Value.ToString();
+            //var Token = this.Request.Headers.FirstOrDefault(c => c.Key == "Token").Value.ToString();
 
-            var WriteToken = await (from vv in _context.Variable.Where(e => e.VariableId == value.VariableId)
-                                    join v in _context.Variable on vv.VariableId equals v.VariableId
-                                    join dp in _context.DevicePin on v.PinId equals dp.PinId
-                                    join d in _context.Device on dp.chipId equals d.ChipId
-                                    select d.WriteAPIKey).SingleOrDefaultAsync();
-            if (Token != WriteToken)
-                return StatusCode(403);
+            //var WriteToken = await (from vv in _context.Variable.Where(e => e.VariableId == value.VariableId)
+            //                        join v in _context.Variable on vv.VariableId equals v.VariableId
+            //                        join dp in _context.DevicePin on v.PinId equals dp.PinId
+            //                        join d in _context.Device on dp.chipId equals d.ChipId
+            //                        select d.WriteAPIKey).SingleOrDefaultAsync();
+            //if (Token != WriteToken)
+            //    return StatusCode(403);
         
                 _context.VariableValue.Add(value);
                 _context.SaveChanges();
