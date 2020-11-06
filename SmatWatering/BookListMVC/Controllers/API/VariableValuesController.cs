@@ -104,24 +104,38 @@ namespace SmartWatering.Controllers.API
 
         // POST: api/thethingsnetwork
         [HttpPost("thethingsnetwork")]
-        public async Task<ActionResult<VariableValue>> ForwardVariableValue(RequestValue value)
+        public async Task<ActionResult<VariableValue>> ForwardVariableValue(VariableValue value)
         {
-            var ID = value.ID;
-            var Value = value.Value;
-            var Token = value.Token;
-            var WriteToken = await  (from vv in _context.Variable.Where(e => e.VariableId == ID)
-                                   join v in _context.Variable on vv.VariableId equals v.VariableId
-                                   join dp in _context.DevicePin on v.PinId equals dp.PinId
-                                   join d in _context.Device on dp.chipId equals d.ChipId
-                                   select d.WriteAPIKey).SingleOrDefaultAsync();
-            //if (Token != WriteToken)
-            //    return StatusCode(403);
-            var variableValue = new VariableValue();
-            variableValue.VariableId = ID;
-            variableValue.Value = Value;
-            _context.VariableValue.Add(variableValue);
-            _context.SaveChanges();
+            var Token = this.Request.Headers.FirstOrDefault(c => c.Key == "Token").Value.ToString();
+
+            var WriteToken = await (from vv in _context.Variable.Where(e => e.VariableId == value.VariableId)
+                                    join v in _context.Variable on vv.VariableId equals v.VariableId
+                                    join dp in _context.DevicePin on v.PinId equals dp.PinId
+                                    join d in _context.Device on dp.chipId equals d.ChipId
+                                    select d.WriteAPIKey).SingleOrDefaultAsync();
+            if (Token != WriteToken)
+                return StatusCode(403);
+        
+                _context.VariableValue.Add(value);
+                _context.SaveChanges();
+            
             return NoContent();
+            //var ID = value.ID;
+            //var Value = value.Value;
+            //var Token = value.Token;
+            //var WriteToken = await  (from vv in _context.Variable.Where(e => e.VariableId == ID)
+            //                       join v in _context.Variable on vv.VariableId equals v.VariableId
+            //                       join dp in _context.DevicePin on v.PinId equals dp.PinId
+            //                       join d in _context.Device on dp.chipId equals d.ChipId
+            //                       select d.WriteAPIKey).SingleOrDefaultAsync();
+            ////if (Token != WriteToken)
+            ////    return StatusCode(403);
+            //var variableValue = new VariableValue();
+            //variableValue.VariableId = ID;
+            //variableValue.Value = Value;
+            //_context.VariableValue.Add(variableValue);
+            //_context.SaveChanges();
+            //return NoContent();
         }
 
         // POST: api/VariableValues
