@@ -1,9 +1,51 @@
+// #include <Wire.h>
+// #include <math.h>
 #include <HardwareSerial.h>
 #include <lmic.h>
 #include <hal/hal.h>
 #include <SPI.h>
-// #include <Wire.h>
-// #include <math.h>
+#include <DHT.h>
+#include "WiFi.h"
+
+const char* ssid = "DESKTOP-EKAHPDC 1971";
+const char* password =  "11223344";
+
+#define DHTPIN 2
+#define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
+const int trigPin = 16;
+const int echoPin = 17;
+const int MoisturePin = 13;
+
+long duration;
+int distance, oldDistance;
+float HumidityValue = 0, TemperatureValue = 0, MoistureValue = 0, WaterLevelValue = 0;
+//VariableValues ID
+const int TemperatureId = 3;
+const int HumidityId = 4;
+const int MoistureId = 5;
+const int WaterLevelId = 6;
+
+const String ServerIP = "192.168.137.32";
+const uint16_t Port =13000;
+WiFiClient client;
+
+void init()
+{
+	Serial.println("Connecting to..");
+	WiFi.begin(ssid, password);
+	while (WiFi.status() != WL_CONNECTED)
+	{
+		delay(500);
+		Serial.print(".");
+	}
+	Serial.println("Connected to the Wifi network");
+
+	dht.begin();
+	pinMode(MoisturePin, INPUT);
+	pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
+	pinMode(echoPin, INPUT);  // Sets the echoPin as an Input
+}
 
 // LoRaWAN NwkSKey, network session key
 static const PROGMEM u1_t NWKSKEY[16] = {0x3E, 0x35, 0x50, 0xDC, 0xB4, 0x4E, 0x9A, 0x62, 0xAA, 0x52, 0x61, 0x25, 0x8E, 0x4F, 0x9C, 0x48};
@@ -98,19 +140,43 @@ void do_send(osjob_t *j)
 	else if (!(LMIC.opmode & OP_TXRXPEND))
 	{
 
+		Serial.println(getChipId());
+		readMoistureSensor();
+		readDHTSensor();
+		getDistance();
 		// byte dữ liệu
 		// coi cấu hình call back  ttn
-		uint8_t buff[6];
-		buff[0] = 0; //getdistance();
-		buff[1] = 1; //getdistance_servo();
-		buff[2] = 2; //getdistance();
-		buff[3] = 3;
-		buff[4] = 4; //getdistance();
-		buff[5] = 5;
+		uint8_t buff_tem[2];
+		buff_tem[0] = TemperatureId;
+		buff_tem[1] = TemperatureValue;
+		LMIC_setTxData2(1, buff_tem, sizeof(buff_tem), 0);
+		Serial.print("TemperatureValue: ");
+		Serial.print(TemperatureValue);
+		Serial.printf(" Packet tem queued\r\n");
 
-		// Prepare upstream data transmission at the next possible time.
-		LMIC_setTxData2(1, buff, sizeof(buff), 0);
-		Serial.printf("Packet queued\r\n");
+		uint8_t buff_hum[2];
+		buff_hum[0] = HumidityId;
+		buff_hum[1] = HumidityValue;
+		LMIC_setTxData2(1, buff_hum, sizeof(buff_hum), 0);
+		Serial.print("HumidityValue: ");
+		Serial.print(HumidityValue);
+		Serial.printf(" Packet hum queued\r\n");
+
+		uint8_t buff_moi[2];
+		buff_moi[0] = MoistureId;
+		buff_moi[1] = MoistureValue;
+		LMIC_setTxData2(1, buff_moi, sizeof(buff_moi), 0);
+		Serial.print("MoistureValue: ");
+		Serial.print(MoistureValue);
+		Serial.printf(" Packet moi queued\r\n");
+
+		uint8_t buff_lv[2];
+		buff_lv[0] = WaterLevelId;
+		buff_lv[1] = WaterLevelValue;
+		LMIC_setTxData2(1, buff_lv, sizeof(buff_lv), 0);
+		Serial.print("WaterLevelValue: ");
+		Serial.print(WaterLevelValue);
+		Serial.printf(" Packet level queued\r\n\n");
 	}
 	// Next TX is scheduled after TX_COMPLETE event.
 }
@@ -119,7 +185,7 @@ void setup()
 {
 	Serial.begin(115200);
 	Serial.printf("Starting...\r\n");
-
+	init();
 	delay(1000); // delay 1s
 
 	// LMIC init
@@ -187,7 +253,6 @@ void setup()
 
 void loop()
 {
-
 	os_runloop_once();
 
 #ifdef SEND_BY_BUTTON
@@ -198,4 +263,80 @@ void loop()
 		do_send(&sendjob);
 	}
 #endif
+
+	if (WiFi.status() == WL_CONNECTED)
+	{
+		socketConnection();
+	}
+}
+
+void socketConnection()
+{
+	// Use WiFiClient class to create TCP connections
+	if (!client.connected())
+	{
+		Serial.println("connection failed");
+		client.connect(ServerIP, Port);
+		client.print(getChipId());
+		delay(5000);
+	}
+	String result = "";
+	while (client.available())
+	{
+		char ch = static_cast<char>(client.read());
+		result += ch;
+	}
+	if (result != "")
+	{
+		Serial.println(result);
+		// handle(result);
+	}
+}
+
+void readDHTSensor()
+{
+	HumidityValue = dht.readHumidity();
+	TemperatureValue = dht.readTemperature();
+	if (isnan(HumidityValue) || isnan(TemperatureValue))
+	{
+		Serial.println("fail to read sensor");
+		HumidityValue = 0;
+		TemperatureValue = 0;
+	}
+}
+
+void getDistance()
+{
+	//// Clears the trigPin
+	digitalWrite(trigPin, LOW);
+	delayMicroseconds(2);
+
+	// Sets the trigPin on HIGH state for 10 micro seconds
+	digitalWrite(trigPin, HIGH);
+	delayMicroseconds(10);
+	digitalWrite(trigPin, LOW);
+
+	// Reads the echoPin, returns the sound wave travel time in microseconds
+	duration = pulseIn(echoPin, HIGH);
+
+	// Calculating the distance
+	distance = duration * 0.034 / 2;
+
+	WaterLevelValue = distance;
+}
+
+void readMoistureSensor()
+{
+	MoistureValue = analogRead(MoisturePin);
+	MoistureValue = (100 - ((MoistureValue / 4095.00) * 100)); // Convert to moisture percentage
+}
+
+int getChipId()
+{
+	uint32_t id = 0;
+	for (int i = 0; i < 17; i = i + 8)
+	{
+		id |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
+	}
+	return (int) id;
 }
