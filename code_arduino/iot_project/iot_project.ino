@@ -5,10 +5,10 @@
 #include <hal/hal.h>
 #include <SPI.h>
 #include <DHT.h>
-#include "WiFi.h"
+#include <WiFi.h>
 
-const char* ssid = "DESKTOP-EKAHPDC 1971";
-const char* password =  "11223344";
+const char *ssid = "DESKTOP-EKAHPDC 1971";
+const char *password = "11223344";
 
 #define DHTPIN 2
 #define DHTTYPE DHT11
@@ -16,18 +16,29 @@ DHT dht(DHTPIN, DHTTYPE);
 const int trigPin = 16;
 const int echoPin = 17;
 const int MoisturePin = 13;
+const int WaterPumpPin = 21;
+const int buzzPin = 15;
 
 long duration;
 int distance, oldDistance;
+
+//Triggers
+float temMin, temMax = 40, humMin = 30, humMax, moiMin = 30, moiMax;
+
+//Sensor value
 float HumidityValue = 0, TemperatureValue = 0, MoistureValue = 0, WaterLevelValue = 0;
+
 //VariableValues ID
 const int TemperatureId = 3;
 const int HumidityId = 4;
 const int MoistureId = 5;
 const int WaterLevelId = 6;
 
-const String ServerIP = "192.168.137.32";
-const uint16_t Port =13000;
+// String DataToSend;
+int Interval = 2000;
+int priority = 0;
+const uint16_t port = 13000;
+const char *host = "192.168.137.32";
 WiFiClient client;
 
 void init()
@@ -45,6 +56,10 @@ void init()
 	pinMode(MoisturePin, INPUT);
 	pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
 	pinMode(echoPin, INPUT);  // Sets the echoPin as an Input
+	pinMode(WaterPumpPin, OUTPUT);
+	pinMode(buzzPin, OUTPUT);
+	digitalWrite(WaterPumpPin, HIGH); // vì chân D3 nối với relay mà relay tích cực thấp nên mặc định chân D3 phải tích cực cao để ngắt relay
+
 }
 
 // LoRaWAN NwkSKey, network session key
@@ -139,8 +154,6 @@ void do_send(osjob_t *j)
 	}
 	else if (!(LMIC.opmode & OP_TXRXPEND))
 	{
-
-		Serial.println(getChipId());
 		readMoistureSensor();
 		readDHTSensor();
 		getDistance();
@@ -276,7 +289,7 @@ void socketConnection()
 	if (!client.connected())
 	{
 		Serial.println("connection failed");
-		client.connect(ServerIP, Port);
+		client.connect(host, port);
 		client.print(getChipId());
 		delay(5000);
 	}
@@ -289,7 +302,7 @@ void socketConnection()
 	if (result != "")
 	{
 		Serial.println(result);
-		// handle(result);
+		//    handle(result);
 	}
 }
 
@@ -338,5 +351,108 @@ int getChipId()
 	{
 		id |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
 	}
-	return (int) id;
+	return (int)id;
+}
+
+void trigger()
+{
+	if (priority >= 1)
+		return;
+	if (MoistureValue < moiMin || TemperatureValue > temMax)
+	{
+		digitalWrite(WaterPumpPin, LOW); // turn the LED on (HIGH is the voltage level)
+		delay(Interval);
+		digitalWrite(WaterPumpPin, HIGH);
+	}
+	else
+	{
+		digitalWrite(WaterPumpPin, HIGH);
+	}
+}
+
+void handle(String data)
+{
+	char AB[50];
+	data.toCharArray(AB, 50);
+	String command = strtok(AB, ":");
+	String value[10];
+	int i = 0;
+	while (command != "")
+	{
+		value[i] = command;
+		data = data.substring(command.length() + 1);
+		data.toCharArray(AB, 50);
+		command = strtok(AB, ":");
+		i++;
+	}
+
+	if (value[0] == "T") //T:1:30:50
+	{
+		char tem[8];
+		if (value[1] == String(TemperatureId))
+		{
+			value[2].toCharArray(tem, value[2].length() + 1);
+			temMin = atof(tem);
+			value[3].toCharArray(tem, value[3].length() + 1);
+			temMax = atof(tem);
+		}
+		else if (value[1] == String(HumidityId))
+		{
+			value[2].toCharArray(tem, value[2].length() + 1);
+			humMin = atof(tem);
+			value[3].toCharArray(tem, value[3].length() + 1);
+			humMax = atof(tem);
+		}
+		else if (value[1] == String(MoistureId))
+		{
+			value[2].toCharArray(tem, value[2].length() + 1);
+			moiMin = atof(tem);
+			value[3].toCharArray(tem, value[3].length() + 1);
+			moiMax = atof(tem);
+		}
+	}
+	else if (value[0] == "S") // S:1:1
+	{
+		if (value[1] == "D2")
+		{
+			digitalWrite(WaterPumpPin, LOW);
+			delay(5000);
+			digitalWrite(WaterPumpPin, HIGH);
+		}
+		else if (value[1] == "D1")
+		{
+			digitalWrite(buzzPin, HIGH);
+			delay(5000);
+			digitalWrite(buzzPin, LOW);
+		}
+	}
+	else if (value[0] == "C") // S:1:1
+	{
+		if (value[1] == WaterPumpPin)
+		{
+			if (value[2] == "1")
+			{
+				priority = 2;
+				digitalWrite(WaterPumpPin, LOW);
+			}
+			else
+			{
+				priority = 0;
+				digitalWrite(WaterPumpPin, HIGH);
+			}
+		}
+		else if (value[1] == "D1")
+		{
+			if (value[2] == "1")
+			{
+				priority = 2;
+				digitalWrite(buzzPin, HIGH);
+			}
+			else
+			{
+				priority = 0;
+				digitalWrite(buzzPin, LOW);
+			}
+		}
+	}
 }
