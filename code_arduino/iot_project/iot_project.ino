@@ -263,7 +263,7 @@ void setup()
 	// Start job
 	do_send(&sendjob);
 }
-
+unsigned long timeout=0;
 void loop()
 {
 	os_runloop_once();
@@ -277,6 +277,10 @@ void loop()
 	}
 #endif
 
+	if (millis() - timeout > 5000){
+		timeout = millis();
+		trigger();
+	}
 	if (WiFi.status() == WL_CONNECTED)
 	{
 		socketConnection();
@@ -302,7 +306,7 @@ void socketConnection()
 	if (result != "")
 	{
 		Serial.println(result);
-		//    handle(result);
+		handle(result);
 	}
 }
 
@@ -395,6 +399,8 @@ void handle(String data)
 			temMin = atof(tem);
 			value[3].toCharArray(tem, value[3].length() + 1);
 			temMax = atof(tem);
+			Serial.println(temMax);
+			Serial.println(temMin);
 		}
 		else if (value[1] == String(HumidityId))
 		{
@@ -402,6 +408,8 @@ void handle(String data)
 			humMin = atof(tem);
 			value[3].toCharArray(tem, value[3].length() + 1);
 			humMax = atof(tem);
+			Serial.println(humMin);
+			Serial.println(humMax);
 		}
 		else if (value[1] == String(MoistureId))
 		{
@@ -409,17 +417,19 @@ void handle(String data)
 			moiMin = atof(tem);
 			value[3].toCharArray(tem, value[3].length() + 1);
 			moiMax = atof(tem);
+			Serial.println(moiMin);
+			Serial.println(moiMax);
 		}
 	}
 	else if (value[0] == "S") // S:1:1
 	{
-		if (value[1] == "D2")
+		if (value[1] == String(WaterPumpPin))
 		{
 			digitalWrite(WaterPumpPin, LOW);
 			delay(5000);
 			digitalWrite(WaterPumpPin, HIGH);
 		}
-		else if (value[1] == "D1")
+		else if (value[1] == String(buzzPin))
 		{
 			digitalWrite(buzzPin, HIGH);
 			delay(5000);
@@ -428,7 +438,7 @@ void handle(String data)
 	}
 	else if (value[0] == "C") // S:1:1
 	{
-		if (value[1] == WaterPumpPin)
+		if (value[1] == String(WaterPumpPin))
 		{
 			if (value[2] == "1")
 			{
@@ -441,7 +451,7 @@ void handle(String data)
 				digitalWrite(WaterPumpPin, HIGH);
 			}
 		}
-		else if (value[1] == "D1")
+		else if (value[1] == String(buzzPin))
 		{
 			if (value[2] == "1")
 			{
