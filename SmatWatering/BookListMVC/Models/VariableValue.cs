@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace BookListMVC.Models
 {
-    public class VariableValue : IEntityDate
-    {
+     public class VariableValue : IEntityDate
+     {
         [Key]
         public int VariableValueId { get; set; }
         public float Value { get; set; }
