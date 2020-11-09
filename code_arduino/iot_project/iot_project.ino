@@ -7,8 +7,8 @@
 #include <DHT.h>
 #include <WiFi.h>
 
-const char *ssid = "DESKTOP-EKAHPDC 1971";
-const char *password = "11223344";
+const char *ssid = "B804_AIOT_Wifi_2.4GHz";
+const char *password = "B84@aiot";
 
 #define DHTPIN 2
 #define DHTTYPE DHT11
@@ -147,6 +147,7 @@ void onEvent(ev_t ev)
 void do_send(osjob_t *j)
 {
 
+
 	// Check if there is not a current TX/RX job running
 	if (LMIC.opmode & OP_TXRXPEND)
 	{
@@ -159,37 +160,26 @@ void do_send(osjob_t *j)
 		getDistance();
 		// byte dữ liệu
 		// coi cấu hình call back  ttn
-		uint8_t buff_tem[2];
-		buff_tem[0] = TemperatureId;
-		buff_tem[1] = TemperatureValue;
-		LMIC_setTxData2(1, buff_tem, sizeof(buff_tem), 0);
+		uint8_t buff[8];
+		buff[0] = TemperatureId;
+		buff[1] = TemperatureValue;
+		buff[2] = HumidityId;
+		buff[3] = HumidityValue;
+		buff[4] = MoistureId;
+		buff[5] = MoistureValue;
+		buff[6] = WaterLevelId;
+		buff[7] = WaterLevelValue;
+		
+		LMIC_setTxData2(1, buff, sizeof(buff), 0);
 		Serial.print("TemperatureValue: ");
 		Serial.print(TemperatureValue);
-		Serial.printf(" Packet tem queued\r\n");
-
-		uint8_t buff_hum[2];
-		buff_hum[0] = HumidityId;
-		buff_hum[1] = HumidityValue;
-		LMIC_setTxData2(1, buff_hum, sizeof(buff_hum), 0);
-		Serial.print("HumidityValue: ");
+		Serial.print(" HumidityValue: ");
 		Serial.print(HumidityValue);
-		Serial.printf(" Packet hum queued\r\n");
-
-		uint8_t buff_moi[2];
-		buff_moi[0] = MoistureId;
-		buff_moi[1] = MoistureValue;
-		LMIC_setTxData2(1, buff_moi, sizeof(buff_moi), 0);
-		Serial.print("MoistureValue: ");
+		Serial.print(" MoistureValue: ");
 		Serial.print(MoistureValue);
-		Serial.printf(" Packet moi queued\r\n");
-
-		uint8_t buff_lv[2];
-		buff_lv[0] = WaterLevelId;
-		buff_lv[1] = WaterLevelValue;
-		LMIC_setTxData2(1, buff_lv, sizeof(buff_lv), 0);
-		Serial.print("WaterLevelValue: ");
+		Serial.print(" WaterLevelValue: ");
 		Serial.print(WaterLevelValue);
-		Serial.printf(" Packet level queued\r\n\n");
+		Serial.printf("\nPacket queued\r\n\n");
 	}
 	// Next TX is scheduled after TX_COMPLETE event.
 }
@@ -266,6 +256,7 @@ void setup()
 unsigned long timeout=0;
 void loop()
 {
+//   Serial.println("ydapchai");
 	os_runloop_once();
 
 #ifdef SEND_BY_BUTTON
@@ -277,14 +268,14 @@ void loop()
 	}
 #endif
 
-	if (millis() - timeout > 5000){
-		timeout = millis();
-		trigger();
-	}
-	if (WiFi.status() == WL_CONNECTED)
-	{
-		socketConnection();
-	}
+//	if (millis() - timeout > 5000){
+//		timeout = millis();
+//		trigger();
+//	}
+//	if (WiFi.status() == WL_CONNECTED)
+//	{
+//		socketConnection();
+//	}
 }
 
 void socketConnection()
