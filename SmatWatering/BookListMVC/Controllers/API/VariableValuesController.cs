@@ -72,21 +72,21 @@ namespace SmartWatering.Controllers.API
             var devicePin = _context.DevicePin;
 
             var result = await (from vv in variableValues
-                                   join v in variables on vv.VariableId equals v.VariableId
-                                   join dp in devicePin on v.PinId equals dp.PinId
-                                   join d in _context.Device on dp.chipId equals d.ChipId
-                                   where d.ReadAPIKey == Token
-                                   select new VariableValueView
-                                   {
-                                       VariableValueId = vv.VariableValueId,
-                                       Value = vv.Value,
-                                       VariableName = v.VariableName,
-                                       PIN = dp.PIN,
-                                       ChipId = dp.chipId,
-                                       CreatedBy = v.CreatedBy,
-                                       VariableId = v.VariableId,
-                                       CreatedDate = v.CreatedDate.ToString("dd-mm-yyyy HH:mm:ss")
-                                   }).ToListAsync();
+                                join v in variables on vv.VariableId equals v.VariableId
+                                join dp in devicePin on v.PinId equals dp.PinId
+                                join d in _context.Device on dp.chipId equals d.ChipId
+                                where d.ReadAPIKey == Token
+                                select new VariableValueView
+                                {
+                                    VariableValueId = vv.VariableValueId,
+                                    Value = vv.Value,
+                                    VariableName = v.VariableName,
+                                    PIN = dp.PIN,
+                                    ChipId = dp.chipId,
+                                    CreatedBy = v.CreatedBy,
+                                    VariableId = v.VariableId,
+                                    CreatedDate = v.CreatedDate.ToString("dd-mm-yyyy HH:mm:ss")
+                                }).ToListAsync();
             if (result == null || result.Count == 0)
             {
                 return StatusCode(403);

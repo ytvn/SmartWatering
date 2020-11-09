@@ -33,7 +33,7 @@ namespace SmartWatering.Controllers
         //api
         public async Task<IActionResult> ApiIndex()
         {
-            var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var LoginUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var count = _context.VariableValue.Count();
             var variableValues = from v in _context.VariableValue
                                  join e in _context.Variable on v.VariableId equals e.VariableId
@@ -47,12 +47,12 @@ namespace SmartWatering.Controllers
                                      PIN = d.PIN,
                                      ChipId = d.chipId,
                                      CreatedBy = e.CreatedBy,
-                                     CreatedDate = v.CreatedDate.ToString("dd-mm-yyyy HH:mm:ss")
+                                     CreatedDate = v.CreatedDate.ToString("dd/MM/yyyy HH:mm:ss")
                                  };
-            if (!(await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
-            {
-                variableValues = variableValues.Where(c => c.CreatedBy == LoginUserId);
-            }
+            //if (!(await authorizationService.AuthorizeAsync(User, "AdminPolicy")).Succeeded)
+            //{
+            //    variableValues = variableValues.Where(c => c.CreatedBy == LoginUserId);
+            //}
             return Json(new { quantity = count, data = variableValues });
         }
 
