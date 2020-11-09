@@ -10,7 +10,7 @@ function getDevice() {
     var val;
     $.ajax({
         type: "GET",
-        url: "http://localhost:5005/devices/getinfo",
+        url: "/devices/getinfo",
         async: false,
         success: function (data) {
             val = data;
@@ -27,7 +27,7 @@ function getPin(chipId) {
     var val;
     $.ajax({
         type: "GET",
-        url: "http://localhost:5005/DevicePins/GetInfo?_chipId=" + chipId + "&type=1",
+        url: "/DevicePins/GetInfo?_chipId=" + chipId + "&type=1",
         async: false,
         success: function (data) {
             val = data;

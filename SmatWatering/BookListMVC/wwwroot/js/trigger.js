@@ -7,7 +7,7 @@ function getVariable() {
     var val;
     $.ajax({
         type: "GET",
-        url: "http://localhost:5005/triggers/getinfo",
+        url: "/triggers/getinfo",
         async: false,
         success: function (data) {
             val = data;
@@ -26,7 +26,7 @@ function getVariable() {
 function stop() {
     $.ajax({
         type: "GET",
-        url: "http://localhost:5005/triggers/stop",
+        url: "/triggers/stop",
         async: false,
         success: function (data) {
             

@@ -1,7 +1,8 @@
 ﻿var model = [];
 var listChart = {};
 var Id;
-var domain = "http://localhost:5005";
+//var domain = window.location.hostname;
+//console.log(domain);
 
 function getDeviceId() {
     Id = window.location.href.split('/');
@@ -14,7 +15,7 @@ window.onload = function () {
     getDeviceId();
     $.ajax({
         type: "GET",
-        url: domain + "/home/GetVariables/" + Id,
+        url: "/home/GetVariables/" + Id,
         async: false,
         success: function (data) {
             model = data;
@@ -36,7 +37,7 @@ function GetVariableValues() {
     var value;
     $.ajax({
         type: "GET",
-        url: domain + "/home/GetVariableValues/" + Id,
+        url: "/home/GetVariableValues/" + Id,
         async: false,
         success: function (data) {
             value = data;
@@ -171,7 +172,7 @@ function GetAverage(type, deviceId, variableId) {
     interval[variableId.toString()] = setInterval(function () {
         $.ajax({
             type: "GET",
-            url: domain + "/home/average/?type=" + type + "&deviceId=" + deviceId + "&variableId=" + variableId,
+            url:  "/home/average/?type=" + type + "&deviceId=" + deviceId + "&variableId=" + variableId,
             async: false,
             success: function (data) {
                 value = data.average;
