@@ -1,27 +1,31 @@
 // #include <Wire.h>
 // #include <math.h>
-#include <HardwareSerial.h>
+// #include <HardwareSerial.h>
 #include <lmic.h>
 #include <hal/hal.h>
 #include <SPI.h>
 #include <DHT.h>
 #include <WiFi.h>
+#include <HTTPClient.h>
 
-const char *ssid = "B804_AIOT_Wifi_2.4GHz";
-const char *password = "B84@aiot";
+const char *ssid = "ytvn";
+const char *password = "yyyyyyyy";
+// const char *ssid = "B804_AIOT_Wifi_2.4GHz";
+// const char *password = "B84@aiot";
 
 #define DHTPIN 2
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
 const int trigPin = 16;
 const int echoPin = 17;
-const int MoisturePin = 13;
+const int MoisturePin = 36;
 const int WaterPumpPin = 21;
 const int buzzPin = 15;
 
 long duration;
 int distance, oldDistance;
 
+float Heigh = 13;
 //Triggers
 float temMin, temMax = 40, humMin = 30, humMax, moiMin = 30, moiMax;
 
@@ -38,9 +42,10 @@ const int WaterLevelId = 6;
 int Interval = 2000;
 int priority = 0;
 const uint16_t port = 13000;
-const char *host = "192.168.137.32";
+const char *host = "192.168.137.1";
 WiFiClient client;
-
+HTTPClient http;
+const char *edgeHost = "http://192.168.137.1:5000/api";
 void init()
 {
 	Serial.println("Connecting to..");
@@ -59,7 +64,6 @@ void init()
 	pinMode(WaterPumpPin, OUTPUT);
 	pinMode(buzzPin, OUTPUT);
 	digitalWrite(WaterPumpPin, HIGH); // vì chân D3 nối với relay mà relay tích cực thấp nên mặc định chân D3 phải tích cực cao để ngắt relay
-
 }
 
 // LoRaWAN NwkSKey, network session key
@@ -147,7 +151,6 @@ void onEvent(ev_t ev)
 void do_send(osjob_t *j)
 {
 
-
 	// Check if there is not a current TX/RX job running
 	if (LMIC.opmode & OP_TXRXPEND)
 	{
@@ -169,7 +172,7 @@ void do_send(osjob_t *j)
 		buff[5] = MoistureValue;
 		buff[6] = WaterLevelId;
 		buff[7] = WaterLevelValue;
-		
+
 		LMIC_setTxData2(1, buff, sizeof(buff), 0);
 		Serial.print("TemperatureValue: ");
 		Serial.print(TemperatureValue);
@@ -189,6 +192,7 @@ void setup()
 	Serial.begin(115200);
 	Serial.printf("Starting...\r\n");
 	init();
+
 	delay(1000); // delay 1s
 
 	// LMIC init
@@ -253,10 +257,10 @@ void setup()
 	// Start job
 	do_send(&sendjob);
 }
-unsigned long timeout=0;
+unsigned long timeout = 0;
+
 void loop()
 {
-//   Serial.println("ydapchai");
 	os_runloop_once();
 
 #ifdef SEND_BY_BUTTON
@@ -268,14 +272,14 @@ void loop()
 	}
 #endif
 
-//	if (millis() - timeout > 5000){
-//		timeout = millis();
-//		trigger();
-//	}
-//	if (WiFi.status() == WL_CONNECTED)
-//	{
-//		socketConnection();
-//	}
+	//	if (millis() - timeout > 5000){
+	//		timeout = millis();
+	//		trigger();
+	//	}
+	if (WiFi.status() == WL_CONNECTED)
+	{
+		socketConnection();
+	}
 }
 
 void socketConnection()
@@ -330,12 +334,37 @@ void getDistance()
 	// Calculating the distance
 	distance = duration * 0.034 / 2;
 
-	WaterLevelValue = distance;
+	if (distance == 0 || oldDistance > distance)
+	{
+		distance = oldDistance;
+		Serial.println("Dispose");
+		return;
+	}
+	if (distance >= Heigh)
+	{
+		priority = 1;
+		digitalWrite(WaterPumpPin, HIGH);
+		digitalWrite(buzzPin, HIGH);
+		sendWarning();
+		//    Serial.println(" buzz");
+	}
+	else
+	{
+		//    Serial.println(" unbuzz");
+		if (priority != 2)
+			priority = 0;
+		digitalWrite(buzzPin, LOW);
+	}
+
+	WaterLevelValue = ((Heigh - distance) / Heigh) * 100;
+	if (WaterLevelValue <= 0)
+		WaterLevelValue = 0;
 }
 
 void readMoistureSensor()
 {
 	MoistureValue = analogRead(MoisturePin);
+	// Serial.print(MoistureValue);
 	MoistureValue = (100 - ((MoistureValue / 4095.00) * 100)); // Convert to moisture percentage
 }
 
@@ -456,4 +485,13 @@ void handle(String data)
 			}
 		}
 	}
+}
+
+void sendWarning()
+{
+	http.begin(edgeHost);
+	http.addHeader("Content-Type", "text/plain");
+	int status = http.POST(String(TemperatureValue) + ":" + String(HumidityValue) + ":" + String(MoistureValue)); // Send sensor value to server
+	Serial.println(status);																						  // Print status code, response from server
+	http.end();
 }
