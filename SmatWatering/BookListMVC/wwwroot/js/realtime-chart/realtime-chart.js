@@ -36,7 +36,8 @@ function onRefresh(chart) {
 		x: Date.now(),
 		y: data.id4[0].value 
 	});
-	setGaugeValue(gaugeElement1, data.id1[0].value, 1);
+	setGaugeValue(gaugeElement1, data.
+		[0].value, 1);
 	setGaugeValue(gaugeElement2, data.id2[0].value, 2);
 	setGaugeValue(gaugeElement3, data.id3[0].value, 3);
 	setGaugeValue(gaugeElement4, data.id4[0].value, 4);
