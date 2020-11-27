@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 namespace SmartWatering.Controllers
 {
     //[Authorize(Roles = "Admin")]
+
     [Authorize(Policy = "AdminRolePolicy")]
     public class AdministrationController : Controller
     {
@@ -32,7 +33,7 @@ namespace SmartWatering.Controllers
         public async Task<IActionResult> ManageUserClaims(string userId)
         {
             var user = await userManager.FindByIdAsync(userId);
-            if(user == null)
+            if (user == null)
             {
                 ViewBag.ErrorMessage = $"User with Id = {userId} cannot be found";
                 return View("NotFound");

@@ -26,7 +26,7 @@ function predictTemperature(date) {
 
     var config = {
         method: 'post',
-        url: 'http://localhost:5000/gboost',
+        url: 'http://192.168.43.60:5000/randomforest',
         headers: {
             'Content-Type': 'application/json'
         },

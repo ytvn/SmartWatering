@@ -101,22 +101,22 @@ namespace SmartWatering.Controllers.API
 
             return new JsonResult(new { DeviceName= DeviceName, Data = result });
         }
-        // POST: api/thethingsnetwork
-        [HttpPost("thethingsnetwork")]
-        public async Task<ActionResult<VariableValue>> ForwardVariableValue(Object value)
-        {
-            Console.WriteLine(value.ToString());
-            dynamic output = JsonConvert.DeserializeObject(value.ToString());
-            Console.WriteLine(output);
-            dynamic data = output.payload_fields.data;
-            Console.WriteLine(data);
-            var val = new
-            {
-                test = data
-            };
-            return new JsonResult(val);
+        //// POST: api/thethingsnetwork
+        //[HttpPost("thethingsnetwork")]
+        //public async Task<ActionResult<VariableValue>> ForwardVariableValue(Object value)
+        //{
+        //    Console.WriteLine(value.ToString());
+        //    dynamic output = JsonConvert.DeserializeObject(value.ToString());
+        //    Console.WriteLine(output);
+        //    dynamic data = output.payload_fields.data;
+        //    Console.WriteLine(data);
+        //    var val = new
+        //    {
+        //        test = data
+        //    };
+        //    return new JsonResult(val);
             
-        }
+        //}
 
         // POST: api/thethingsnetwork
         [HttpPost("thethingsnetwork")]
